@@ -19,6 +19,11 @@ export type Database = {
           created_at: string
           display_name: string
           id: string
+          interests: string[]
+          languages: string[]
+          notify_community: boolean
+          notify_email: boolean
+          onboarded: boolean
           role: string
           updated_at: string
         }
@@ -26,6 +31,11 @@ export type Database = {
           created_at?: string
           display_name?: string
           id: string
+          interests?: string[]
+          languages?: string[]
+          notify_community?: boolean
+          notify_email?: boolean
+          onboarded?: boolean
           role?: string
           updated_at?: string
         }
@@ -33,6 +43,11 @@ export type Database = {
           created_at?: string
           display_name?: string
           id?: string
+          interests?: string[]
+          languages?: string[]
+          notify_community?: boolean
+          notify_email?: boolean
+          onboarded?: boolean
           role?: string
           updated_at?: string
         }
