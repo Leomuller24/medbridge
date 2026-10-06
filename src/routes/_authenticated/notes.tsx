@@ -59,7 +59,7 @@ function NotesPage() {
     if (!note || note.visibility !== "shared" || !current) return;
     updateStore((s) => ({
       ...s,
-      posts: [{ id: newId(), category: "Communication", title: note.text.split("\n")[0].slice(0, 80), body: note.text, author: "You", createdAt: new Date().toISOString(), helpful: 0, language: current.language, replies: [] }, ...s.posts],
+      posts: [{ id: newId(), category: "Communication", title: (note.text.split("\n")[0] ?? "").slice(0, 80), body: note.text, author: "You", createdAt: new Date().toISOString(), helpful: 0, language: current.language, replies: [] }, ...s.posts],
     }));
     toast.success("Shared to Community");
   }
