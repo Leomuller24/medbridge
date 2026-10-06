@@ -1,8 +1,11 @@
-import { Link } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Menu, ShieldPlus, X } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { useSession } from "@/hooks/use-session";
+import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
 const navigation = [
@@ -72,8 +75,38 @@ export function MedBridgeHeader() {
               {item.label}
             </Link>
           ))}
+          <AccountButton onDone={() => setIsOpen(false)} />
         </div>
       </nav>
     </header>
+  );
+}
+function AccountButton({ onDone }: { onDone?: () => void }) {
+  const { session, ready } = useSession();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  if (!ready) return null;
+  if (!session) {
+    return (
+      <Link to="/login" onClick={onDone} className="ml-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+        Log in
+      </Link>
+    );
+  }
+  return (
+    <Button
+      type="button"
+      variant="outline"
+      className="ml-2"
+      onClick={async () => {
+        onDone?.();
+        await queryClient.cancelQueries();
+        queryClient.clear();
+        await supabase.auth.signOut();
+        navigate({ to: "/login", replace: true });
+      }}
+    >
+      Sign out
+    </Button>
   );
 }
