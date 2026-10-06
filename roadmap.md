@@ -5,3 +5,4 @@
 - [ ] Add empty Notes, Community, and Settings pages
 - [ ] Add mock login page with email and password fields
 - [ ] Add mock registration page with email and password fields plus signup guide
+- [ ] Use exact privacy note: “MedBridge does not store patient data.”
