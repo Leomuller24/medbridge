@@ -145,3 +145,7 @@
     letter-spacing: 0;
   }
 }
+
+@media print {
+  header, .print\:hidden { display: none !important; }
+}

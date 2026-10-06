@@ -8,7 +8,7 @@ import { useSession } from "@/hooks/use-session";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
-const navigation = [
+const baseNavigation: { label: string; to: "/" | "/dashboard" | "/notes" | "/community" | "/settings"; exact: boolean }[] = [
   { label: "Home", to: "/" as const, exact: true },
   { label: "Notes", to: "/notes" as const, exact: false },
   { label: "Community", to: "/community" as const, exact: false },
@@ -17,6 +17,8 @@ const navigation = [
 
 export function MedBridgeHeader() {
   const [isOpen, setIsOpen] = useState(false);
+  const { session } = useSession();
+  const navigation = baseNavigation.map((n) => (n.label === "Home" && session ? { ...n, to: "/dashboard" as const } : n));
 
   return (
     <header className="border-b border-border/80 bg-background/95 backdrop-blur">
