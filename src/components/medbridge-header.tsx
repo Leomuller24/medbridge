@@ -38,6 +38,7 @@ export function MedBridgeHeader() {
               {item.label}
             </Link>
           ))}
+          <AccountButton />
         </nav>
 
         <Button

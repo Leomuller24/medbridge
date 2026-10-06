@@ -1,22 +1,79 @@
-import { Link } from "@tanstack/react-router";
-import { Check, LockKeyhole, Mail } from "lucide-react";
-import { type FormEvent, useState } from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { BriefcaseMedical, Check, LockKeyhole, Mail, UserRound } from "lucide-react";
+import { type FormEvent, useEffect, useState } from "react";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useSession } from "@/hooks/use-session";
+import { lovable } from "@/integrations/lovable/index";
+import { supabase } from "@/integrations/supabase/client";
 
 type AuthFormProps = {
   mode: "login" | "register";
 };
 
-export function AuthForm({ mode }: AuthFormProps) {
-  const [submitted, setSubmitted] = useState(false);
-  const isRegister = mode === "register";
+const credentials = z.object({
+  email: z.string().trim().email("Enter a valid email address.").max(254),
+  password: z.string().min(8, "Password must be at least 8 characters.").max(128),
+});
+const registration = credentials.extend({
+  name: z.string().trim().min(1, "Enter your name.").max(100),
+  role: z.string().trim().min(1, "Enter your role.").max(60),
+});
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+export function AuthForm({ mode }: AuthFormProps) {
+  const isRegister = mode === "register";
+  const navigate = useNavigate();
+  const { session } = useSession();
+  const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (session) navigate({ to: "/notes", replace: true });
+  }, [session, navigate]);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSubmitted(true);
+    setError(null);
+    setNotice(null);
+    const form = Object.fromEntries(new FormData(event.currentTarget));
+    const parsed = (isRegister ? registration : credentials).safeParse(form);
+    if (!parsed.success) {
+      setError(parsed.error.issues[0]?.message ?? "Please check your details.");
+      return;
+    }
+    setBusy(true);
+    try {
+      if (isRegister) {
+        const d = parsed.data as z.infer<typeof registration>;
+        const { data, error: err } = await supabase.auth.signUp({
+          email: d.email,
+          password: d.password,
+          options: {
+            emailRedirectTo: window.location.origin,
+            data: { display_name: d.name, role: d.role },
+          },
+        });
+        if (err) throw err;
+        if (!data.session) setNotice("Check your email and select the confirmation link to finish registering.");
+      } else {
+        const { error: err } = await supabase.auth.signInWithPassword(parsed.data);
+        if (err) throw err;
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleGoogle() {
+    setError(null);
+    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/login" });
+    if (result.error) setError("Google sign-in did not complete. Please try again.");
   }
 
   return (
@@ -28,52 +85,44 @@ export function AuthForm({ mode }: AuthFormProps) {
             {isRegister ? "Register for MedBridge" : "Log in to MedBridge"}
           </h1>
           <p className="mt-3 text-sm leading-6 text-muted-foreground">
-            This demonstration uses mock authentication. Your entries are not sent or stored.
+            {isRegister ? "Create your account to access Notes, Community and Settings." : "Sign in to access Notes, Community and Settings."}
           </p>
 
-          <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
-            <div className="space-y-2">
-              <Label htmlFor={`${mode}-email`}>Email address</Label>
-              <div className="relative">
-                <Mail aria-hidden="true" className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  id={`${mode}-email`}
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  placeholder="name@clinic.ch"
-                  required
-                  maxLength={254}
-                  className="h-11 pl-10"
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor={`${mode}-password`}>Password</Label>
-              <div className="relative">
-                <LockKeyhole aria-hidden="true" className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  id={`${mode}-password`}
-                  name="password"
-                  type="password"
-                  autoComplete={isRegister ? "new-password" : "current-password"}
-                  placeholder="Enter your password"
-                  required
-                  minLength={8}
-                  maxLength={128}
-                  className="h-11 pl-10"
-                />
-              </div>
-            </div>
-            <Button type="submit" size="lg" className="w-full">
-              {isRegister ? "Register" : "Log in"}
+          <Button type="button" variant="outline" size="lg" className="mt-8 w-full" onClick={handleGoogle}>
+            Continue with Google
+          </Button>
+          <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="h-px flex-1 bg-border" />or<span className="h-px flex-1 bg-border" />
+          </div>
+
+          <form className="space-y-5" onSubmit={handleSubmit} noValidate>
+            {isRegister && (
+              <>
+                <Field id="register-name" name="name" label="Full name" icon={UserRound} autoComplete="name" placeholder="Dr. Anna Keller" maxLength={100} />
+                <Field id="register-role" name="role" label="Role" icon={BriefcaseMedical} autoComplete="organization-title" placeholder="e.g. Nurse, General practitioner" maxLength={60} />
+              </>
+            )}
+            <Field id={`${mode}-email`} name="email" type="email" label="Email address" icon={Mail} autoComplete="email" placeholder="name@clinic.ch" maxLength={254} />
+            <Field
+              id={`${mode}-password`}
+              name="password"
+              type="password"
+              label="Password"
+              icon={LockKeyhole}
+              autoComplete={isRegister ? "new-password" : "current-password"}
+              placeholder="At least 8 characters"
+              maxLength={128}
+            />
+            <Button type="submit" size="lg" className="w-full" disabled={busy}>
+              {busy ? "Please wait…" : isRegister ? "Register" : "Log in"}
             </Button>
           </form>
 
-          {submitted && (
-            <p role="status" className="mt-4 rounded-lg bg-secondary px-4 py-3 text-sm text-secondary-foreground">
-              Mock authentication complete. No account or data was created.
-            </p>
+          {error && (
+            <p role="alert" className="mt-4 rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">{error}</p>
+          )}
+          {notice && (
+            <p role="status" className="mt-4 rounded-lg bg-secondary px-4 py-3 text-sm text-secondary-foreground">{notice}</p>
           )}
 
           <p className="mt-6 text-center text-sm text-muted-foreground">
@@ -86,13 +135,17 @@ export function AuthForm({ mode }: AuthFormProps) {
       </section>
 
       <aside className="order-1 lg:order-2">
-        <p className="text-sm font-semibold text-primary">{isRegister ? "Getting started" : "Secure demonstration"}</p>
+        <p className="text-sm font-semibold text-primary">{isRegister ? "Getting started" : "Secure access"}</p>
         <h2 className="mt-3 text-3xl font-semibold text-foreground">
           {isRegister ? "How to sign up" : "A clear, private starting point"}
         </h2>
         {isRegister ? (
           <ol className="mt-8 space-y-6">
-            {["Use your professional email address.", "Choose a password with at least eight characters.", "Select Register to enter the mock experience."].map((step, index) => (
+            {[
+              "Enter your name, your role and your professional email address — or continue with Google.",
+              "Choose a password with at least eight characters.",
+              "Confirm your email using the link we send you, then log in.",
+            ].map((step, index) => (
               <li key={step} className="flex gap-4">
                 <span className="grid size-8 shrink-0 place-items-center rounded-full bg-accent text-sm font-semibold text-accent-foreground">{index + 1}</span>
                 <p className="pt-1 text-sm leading-6 text-muted-foreground">{step}</p>
@@ -102,11 +155,34 @@ export function AuthForm({ mode }: AuthFormProps) {
         ) : (
           <div className="mt-8 flex gap-4">
             <span className="grid size-9 shrink-0 place-items-center rounded-full bg-accent text-accent-foreground"><Check aria-hidden="true" className="size-4" /></span>
-            <p className="pt-1 text-sm leading-6 text-muted-foreground">Use any valid email format and an eight-character password to explore this demonstration.</p>
+            <p className="pt-1 text-sm leading-6 text-muted-foreground">Use the email and password you registered with, or continue with Google.</p>
           </div>
         )}
         <p className="mt-10 border-t border-border pt-6 text-sm font-medium text-foreground">MedBridge does not store patient data.</p>
       </aside>
     </main>
+  );
+}
+
+type FieldProps = {
+  id: string;
+  name: string;
+  label: string;
+  icon: typeof Mail;
+  type?: string;
+  autoComplete: string;
+  placeholder: string;
+  maxLength: number;
+};
+
+function Field({ id, name, label, icon: Icon, type = "text", autoComplete, placeholder, maxLength }: FieldProps) {
+  return (
+    <div className="space-y-2">
+      <Label htmlFor={id}>{label}</Label>
+      <div className="relative">
+        <Icon aria-hidden="true" className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Input id={id} name={name} type={type} autoComplete={autoComplete} placeholder={placeholder} required maxLength={maxLength} className="h-11 pl-10" />
+      </div>
+    </div>
   );
 }
