@@ -1,4 +1,4 @@
-// Example content only. Replace with the curated Swiss SNOMED symptom list and reviewed briefings.
+// Symptom list is the curated Swiss SNOMED CT set. Briefing text is still example content.
 
 export const ROLES = ["Doctor", "Nurse", "Interpreter", "Other"] as const;
 
@@ -143,9 +143,9 @@ export type Post = {
 export const COMMUNITY_CATEGORIES = ["All", "Communication", "Cultural context", "Interpreting", "Family care"];
 
 export const SEED_CASES: CaseRecord[] = [
-  { id: "c1", code: "CASE-A14", language: "Tigrinya", date: "2026-10-01", symptoms: ["Headache", "Sleep problems"], redFlags: ["Interpreter needed for every visit"] },
+  { id: "c1", code: "CASE-A14", language: "Tigrinya", date: "2026-10-01", symptoms: ["Headache", "Fatigue"], redFlags: ["Interpreter needed for every visit"] },
   { id: "c2", code: "CASE-B07", language: "Arabic", date: "2026-09-28", symptoms: ["Abdominal pain"], redFlags: [] },
-  { id: "c3", code: "CASE-C22", language: "Ukrainian", date: "2026-09-24", symptoms: ["Low mood", "Fatigue"], redFlags: ["Prefers female provider"] },
+  { id: "c3", code: "CASE-C22", language: "Ukrainian", date: "2026-09-24", symptoms: ["Malaise", "Fatigue"], redFlags: ["Prefers female provider"] },
 ];
 
 export const SEED_NOTES: NoteRecord[] = [
