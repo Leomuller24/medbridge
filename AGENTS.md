@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 
 - Keep MedBridge public pages in file-based routes and shared navigation in the root layout so every page has consistent access and active states.
+- Signed-in-only pages live under src/routes/_authenticated/ (client-side gate redirecting to /login); public pages stay top-level — keeps access rules in one place.

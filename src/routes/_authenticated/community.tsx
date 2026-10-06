@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { PlaceholderPage } from "@/components/placeholder-page";
 
-export const Route = createFileRoute("/community")({
+export const Route = createFileRoute("/_authenticated/community")({
   head: () => ({
     meta: [
       { title: "Community — MedBridge" },
