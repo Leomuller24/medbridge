@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep MedBridge public pages in file-based routes and shared navigation in the root layout so every page has consistent access and active states.
