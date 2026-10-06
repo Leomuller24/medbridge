@@ -28,16 +28,52 @@ export const LANGUAGES = [
   "Spanish",
 ];
 
-export const SYMPTOMS = [
-  "Abdominal pain", "Back pain", "Breathlessness", "Chest pain", "Chills", "Constipation", "Cough",
-  "Diarrhoea", "Dizziness", "Ear pain", "Fatigue", "Fever", "Headache", "Heart palpitations",
-  "Heartburn", "Itching", "Joint pain", "Loss of appetite", "Low mood", "Muscle pain", "Nausea",
-  "Neck pain", "Numbness", "Painful urination", "Rash", "Runny nose", "Shortness of breath on exertion",
-  "Sleep problems", "Sore throat", "Sweating", "Swelling of legs", "Toothache", "Tremor", "Vomiting",
-  "Weight loss", "Wheezing", "Worry or anxiety", "Blurred vision", "Eye redness", "Fainting",
-  "Frequent urination", "Hair loss", "Hearing loss", "Hoarseness", "Menstrual pain", "Nosebleed",
-  "Pelvic pain", "Restlessness", "Shoulder pain", "Stomach cramps",
+// Curated Swiss SNOMED CT symptom list: [code, preferred term, category]
+const SNOMED_ROWS: [string, string, string][] = [
+  ["21522001", "Abdominal pain", "Pain"],
+  ["29857009", "Chest pain", "Pain"],
+  ["57676002", "Joint pain", "Pain"],
+  ["68962001", "Muscle pain", "Pain"],
+  ["162397003", "Sore throat", "Pain"],
+  ["25064002", "Headache", "Pain"],
+  ["386661006", "Fever", "General"],
+  ["103001002", "Feeling feverish", "General"],
+  ["43724002", "Chill", "General"],
+  ["38880002", "Rigor", "General"],
+  ["84229001", "Fatigue", "General"],
+  ["367391008", "Malaise", "General"],
+  ["26544005", "Muscle weakness", "General"],
+  ["79890006", "Loss of appetite", "General"],
+  ["49727002", "Cough", "Respiratory"],
+  ["267036007", "Dyspnea", "Respiratory"],
+  ["23924001", "Tight chest", "Respiratory"],
+  ["56018004", "Wheezing", "Respiratory"],
+  ["68235000", "Nasal congestion", "Respiratory"],
+  ["64531003", "Nasal discharge", "Respiratory"],
+  ["66857006", "Hemoptysis", "Respiratory"],
+  ["82272006", "Common cold", "Respiratory"],
+  ["422587007", "Nausea", "Gastrointestinal"],
+  ["422400008", "Vomiting", "Gastrointestinal"],
+  ["62315008", "Diarrhea", "Gastrointestinal"],
+  ["271807003", "Skin rash", "Skin"],
+  ["46742003", "Skin ulcer", "Skin"],
+  ["9826008", "Conjunctivitis", "Eye"],
+  ["44169009", "Loss of smell", "Sensory"],
+  ["36955009", "Loss of taste", "Sensory"],
+  ["44077006", "Numbness", "Sensory"],
+  ["30746006", "Swollen glands", "General"],
+  ["131148009", "Bleeding", "General"],
+  ["3006004", "Disturbance of consciousness", "Neurological"],
+  ["91175000", "Seizure", "Neurological"],
+  ["282145008", "Unable to walk", "Mobility"],
+  ["3415004", "Cyanosis", "General"],
+  ["84387000", "Asymptomatic", "General"],
 ];
+
+export type Symptom = { code: string; term: string; category: string };
+export const SNOMED_SYMPTOMS: Symptom[] = SNOMED_ROWS.map(([code, term, category]) => ({ code, term, category }));
+export const SYMPTOMS = SNOMED_SYMPTOMS.map((s) => s.term);
+export const SYMPTOM_CATEGORIES = [...new Set(SNOMED_SYMPTOMS.map((s) => s.category))];
 
 export type Briefing = {
   symptom: string;

@@ -80,13 +80,17 @@ function CasePage() {
               <CommandInput placeholder="Search symptoms…" />
               <CommandList>
                 <CommandEmpty>No symptom found.</CommandEmpty>
-                <CommandGroup>
-                  {SYMPTOMS.map((s) => (
-                    <CommandItem key={s} value={s} onSelect={() => toggle(s)}>
-                      <Check aria-hidden="true" className={record.symptoms.includes(s) ? "opacity-100" : "opacity-0"} /> {s}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
+                {SYMPTOM_CATEGORIES.map((cat) => (
+                  <CommandGroup key={cat} heading={cat}>
+                    {SNOMED_SYMPTOMS.filter((s) => s.category === cat).map((s) => (
+                      <CommandItem key={s.code} value={`${s.term} ${s.code}`} onSelect={() => toggle(s.term)}>
+                        <Check aria-hidden="true" className={record.symptoms.includes(s.term) ? "opacity-100" : "opacity-0"} />
+                        <span className="flex-1">{s.term}</span>
+                        <span className="text-xs text-muted-foreground">{s.code}</span>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                ))}
               </CommandList>
             </Command>
           </PopoverContent>
