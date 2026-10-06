@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { newId, updateStore, useStore } from "@/lib/local-store";
-import { SYMPTOMS, getBriefing } from "@/lib/medbridge-data";
+import { SNOMED_SYMPTOMS, SYMPTOM_CATEGORIES, getBriefing } from "@/lib/medbridge-data";
 
 export const Route = createFileRoute("/_authenticated/cases/$caseId")({
   head: () => ({
