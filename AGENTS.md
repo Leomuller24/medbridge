@@ -11,3 +11,4 @@
 
 - Keep MedBridge public pages in file-based routes and shared navigation in the root layout so every page has consistent access and active states.
 - Signed-in-only pages live under src/routes/_authenticated/ (client-side gate redirecting to /login); public pages stay top-level — keeps access rules in one place.
+- Cases, notes and community posts live in browser storage via src/lib/local-store.ts, seeded from example data; only account profile data goes to the backend — keeps patient-related content off servers.

@@ -32,7 +32,7 @@ export function AuthForm({ mode }: AuthFormProps) {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (session) navigate({ to: "/notes", replace: true });
+    if (session) navigate({ to: "/dashboard", replace: true });
   }, [session, navigate]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
