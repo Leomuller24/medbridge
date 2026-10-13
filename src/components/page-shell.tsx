@@ -2,9 +2,10 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
-export function PageShell({ eyebrow, title, actions, children, className }: { eyebrow?: string; title: string; actions?: ReactNode; children: ReactNode; className?: string }) {
+export function PageShell({ eyebrow, title, actions, children, className, top }: { eyebrow?: string; title: string; actions?: ReactNode; children: ReactNode; className?: string; top?: ReactNode }) {
   return (
-    <main className={cn("mx-auto min-h-[calc(100vh-4.5rem)] max-w-7xl px-5 py-12 sm:px-8 lg:px-10 lg:py-16", className)}>
+    <main className={cn("mx-auto min-h-[calc(100vh-4.5rem)] max-w-7xl px-5 py-8 sm:px-8 lg:px-10 lg:py-16", className)}>
+      {top && <div className="mb-8">{top}</div>}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           {eyebrow && <p className="text-sm font-semibold text-primary">{eyebrow}</p>}

@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { BookOpen, Languages, NotebookPen, Pin, Plus, UsersRound } from "lucide-react";
 import { useEffect } from "react";
 
+import { GlobalSearch } from "@/components/global-search";
 import { PageShell, cardClass, formatDate } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import { useProfile } from "@/hooks/use-profile";
@@ -42,6 +43,7 @@ function Dashboard() {
 
   return (
     <PageShell
+      top={<GlobalSearch onSelectSymptom={(symptom) => navigate({ to: "/cases/new", search: { symptom } })} />}
       eyebrow="Home"
       title={name ? `Good to see you, ${name}` : "Welcome to MedBridge"}
       actions={<Button asChild size="lg"><Link to="/cases/new"><Plus aria-hidden="true" /> New Case</Link></Button>}

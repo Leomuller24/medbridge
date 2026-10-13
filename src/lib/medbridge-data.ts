@@ -188,3 +188,71 @@ export const SEED_POSTS: Post[] = [
     replies: [],
   },
 ];
+
+// Example synonyms (lay terms) used by search. Example content, to be reviewed.
+export const SYMPTOM_SYNONYMS: Record<string, string[]> = {
+  "Abdominal pain": ["stomach ache", "belly pain", "tummy ache", "cramps"],
+  "Chest pain": ["chest tightness", "heart pain", "pressure in chest"],
+  "Joint pain": ["aching joints", "arthralgia"],
+  "Muscle pain": ["myalgia", "body aches", "sore muscles"],
+  "Sore throat": ["throat pain", "scratchy throat"],
+  Headache: ["head pain", "migraine", "pressure in head"],
+  Fever: ["high temperature", "pyrexia", "hot"],
+  "Feeling feverish": ["feeling hot", "hot and cold"],
+  Chill: ["chills", "shivering", "feeling cold"],
+  Rigor: ["shaking chills", "shaking"],
+  Fatigue: ["tiredness", "exhaustion", "no energy", "weakness"],
+  Malaise: ["feeling unwell", "general discomfort"],
+  "Muscle weakness": ["weak muscles", "loss of strength"],
+  "Loss of appetite": ["not hungry", "anorexia", "no appetite"],
+  Cough: ["coughing"],
+  Dyspnea: ["shortness of breath", "breathlessness", "difficulty breathing"],
+  "Tight chest": ["chest tightness", "heavy chest"],
+  Wheezing: ["whistling breath"],
+  "Nasal congestion": ["blocked nose", "stuffy nose"],
+  "Nasal discharge": ["runny nose"],
+  Hemoptysis: ["coughing blood", "blood in sputum"],
+  "Common cold": ["cold", "flu-like"],
+  Nausea: ["feeling sick", "queasy"],
+  Vomiting: ["being sick", "throwing up"],
+  Diarrhea: ["diarrhoea", "loose stools", "runny stomach"],
+  "Skin rash": ["rash", "spots", "itchy skin"],
+  "Skin ulcer": ["open sore", "wound"],
+  Conjunctivitis: ["pink eye", "red eye"],
+  "Loss of smell": ["anosmia", "can't smell"],
+  "Loss of taste": ["ageusia", "can't taste"],
+  Numbness: ["tingling", "pins and needles"],
+  "Swollen glands": ["swollen lymph nodes", "lumps in neck"],
+  Bleeding: ["blood loss", "haemorrhage"],
+  "Disturbance of consciousness": ["confusion", "fainting", "drowsy"],
+  Seizure: ["fit", "convulsion", "epilepsy"],
+  "Unable to walk": ["can't walk", "difficulty walking"],
+  Cyanosis: ["blue lips", "bluish skin"],
+  Asymptomatic: ["no symptoms"],
+};
+
+// Example equivalents in patient languages (transliterated where needed). Example content, to be reviewed.
+export const SYMPTOM_TRANSLATIONS: Record<string, Record<string, string>> = {
+  Arabic: { Headache: "صداع (sudaa)", Fever: "حمى (humma)", Cough: "سعال (suaal)", "Abdominal pain": "ألم في البطن (alam fil batn)", Fatigue: "تعب (taab)", Nausea: "غثيان (ghathayan)", Vomiting: "تقيؤ (taqayyu)", Diarrhea: "إسهال (ishaal)", "Chest pain": "ألم في الصدر (alam fis sadr)", Dyspnea: "ضيق تنفس (dayq tanaffus)", "Sore throat": "التهاب الحلق (iltihab al halq)", "Skin rash": "طفح جلدي (tafh jildi)" },
+  Turkish: { Headache: "baş ağrısı", Fever: "ateş", Cough: "öksürük", "Abdominal pain": "karın ağrısı", Fatigue: "yorgunluk", Nausea: "bulantı", Vomiting: "kusma", Diarrhea: "ishal", "Chest pain": "göğüs ağrısı", Dyspnea: "nefes darlığı", "Sore throat": "boğaz ağrısı", "Skin rash": "döküntü" },
+  Ukrainian: { Headache: "головний біль (holovnyi bil)", Fever: "гарячка (hariachka)", Cough: "кашель (kashel)", "Abdominal pain": "біль у животі (bil u zhyvoti)", Fatigue: "втома (vtoma)", Nausea: "нудота (nudota)", Vomiting: "блювання (bliuvannia)", Diarrhea: "діарея (diareia)", "Chest pain": "біль у грудях (bil u hrudiakh)", Dyspnea: "задишка (zadyshka)", "Sore throat": "біль у горлі (bil u horli)", Malaise: "нездужання (nezduzhannia)" },
+  Albanian: { Headache: "dhimbje koke", Fever: "ethe", Cough: "kollë", "Abdominal pain": "dhimbje barku", Fatigue: "lodhje", Nausea: "të përziera", Vomiting: "të vjella", Diarrhea: "diarre", "Chest pain": "dhimbje gjoksi", Dyspnea: "vështirësi në frymëmarrje" },
+  Spanish: { Headache: "dolor de cabeza", Fever: "fiebre", Cough: "tos", "Abdominal pain": "dolor abdominal", Fatigue: "cansancio", Nausea: "náuseas", Vomiting: "vómitos", Diarrhea: "diarrea", "Chest pain": "dolor de pecho", Dyspnea: "falta de aire", "Sore throat": "dolor de garganta", "Skin rash": "sarpullido" },
+  Portuguese: { Headache: "dor de cabeça", Fever: "febre", Cough: "tosse", "Abdominal pain": "dor abdominal", Fatigue: "cansaço", Nausea: "náusea", Vomiting: "vômito", Diarrhea: "diarreia", "Chest pain": "dor no peito", Dyspnea: "falta de ar", "Sore throat": "dor de garganta" },
+  Tigrinya: { Headache: "ሕማም ርእሲ (himam rasi)", Fever: "ረስኒ (resni)", Cough: "ሰዓል (seal)", "Abdominal pain": "ሕማም ከብዲ (himam kebdi)", Fatigue: "ድኻም (dikham)" },
+  Dari: { Headache: "سردرد (sardard)", Fever: "تب (tab)", Cough: "سرفه (sorfa)", "Abdominal pain": "دل‌درد (deldard)", Fatigue: "خستگی (khastagi)" },
+};
+
+export type Article = { id: string; title: string; summary: string; tags: string[]; source: string };
+
+export const ARTICLES: Article[] = [
+  { id: "a1", title: "Working with professional interpreters", summary: "Speak to the patient, use short sentences and allow time for interpretation. Brief the interpreter on the topic beforehand.", tags: ["interpreting", "communication", "consultation"], source: "Example source · Swiss interpreting guidance (mock)" },
+  { id: "a2", title: "Involving families respectfully", summary: "Acknowledge relatives' role while making space for the patient's own voice and consent.", tags: ["family", "consent", "communication"], source: "Example source · Migrant health toolkit (mock)" },
+  { id: "a3", title: "Checking understanding with teach-back", summary: "Ask the patient to explain the plan back in their own words to confirm shared understanding.", tags: ["health literacy", "communication", "teach-back"], source: "Example source · Health literacy network (mock)" },
+  { id: "a4", title: "Body metaphors when describing pain", summary: "Many patients describe pain and distress with images of heat, weight or movement. Explore the image rather than correcting it.", tags: ["pain", "metaphors", "cultural context"], source: "Example source · Transcultural care review (mock)" },
+  { id: "a5", title: "Gender preferences in consultations", summary: "Some patients feel more comfortable with a provider or interpreter of the same gender. Ask early and plan accordingly.", tags: ["gender", "preferences", "cultural context"], source: "Example source · Clinic practice notes (mock)" },
+  { id: "a6", title: "Talking about mental wellbeing across cultures", summary: "Stigma and vocabulary differ widely. Starting with sleep, energy and daily life can feel less intrusive.", tags: ["mental health", "stigma", "fatigue"], source: "Example source · Psychosocial care guide (mock)" },
+  { id: "a7", title: "Fasting periods and appointments", summary: "Religious fasting may influence appointment timing and how patients talk about eating, drinking and energy.", tags: ["religion", "fasting", "loss of appetite"], source: "Example source · Intercultural calendar (mock)" },
+  { id: "a8", title: "Trauma-informed communication", summary: "Explain each step, offer choices and avoid unnecessary repetition of difficult histories.", tags: ["trauma", "refugees", "communication"], source: "Example source · Refugee health network (mock)" },
+  { id: "a9", title: "Explaining the Swiss healthcare system", summary: "Patients may be unfamiliar with GP referrals, insurance models and appointment etiquette. Short explanations help build trust.", tags: ["health system", "insurance", "orientation"], source: "Example source · Patient orientation leaflet (mock)" },
+];
