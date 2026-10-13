@@ -117,6 +117,8 @@ export type CaseRecord = {
   date: string;
   symptoms: string[];
   redFlags: string[];
+  interpreterNeeded?: boolean | undefined;
+  commPrefs?: string | undefined;
 };
 
 export type NoteRecord = {
@@ -125,6 +127,8 @@ export type NoteRecord = {
   text: string;
   visibility: "private" | "shared";
   createdAt: string;
+  patientAgreed?: boolean | undefined;
+  source?: string | undefined;
 };
 
 export type Reply = { id: string; author: string; text: string; createdAt: string; replies?: Reply[]; reports?: Report[] | undefined; hidden?: boolean | undefined };
@@ -139,6 +143,7 @@ export type Post = {
   helpful: number;
   language: string;
   replies: Reply[];
+  source?: string | undefined;
   reports?: Report[] | undefined;
   hidden?: boolean | undefined;
 };
