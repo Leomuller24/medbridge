@@ -74,20 +74,23 @@
 }
 
 :root {
-  --radius: 1rem;
-  --navy: oklch(0.264 0.068 255.3);
-  --midnight: oklch(0.316 0.085 257.8);
-  --teal: oklch(0.562 0.106 231.9);
-  --aqua: oklch(0.758 0.117 189.4);
-  --mint: oklch(0.948 0.022 179.2);
-  --ice: oklch(0.959 0.013 241);
-  --coral: oklch(0.687 0.151 33.4);
-  --amber: oklch(0.82 0.147 81.2);
-  --gradient-hero: radial-gradient(60% 80% at 85% 20%, oklch(0.562 0.106 231.9 / 0.55), transparent 70%), linear-gradient(135deg, var(--navy) 0%, var(--midnight) 50%, var(--teal) 130%);
+  --radius: 1.25rem; /* 20px card radius */
+  --navy: #0B2545;
+  --midnight: #13315C;
+  --teal: #1D7FA8;
+  --aqua: #3CC8C0;
+  --mint: #DFF3EE;
+  --ice: #EAF3FA;
+  --coral: #E8735A;
+  --amber: #F4B942;
+  --gradient-hero: radial-gradient(60% 80% at 85% 20%, rgb(29 127 168 / 0.55), transparent 70%), linear-gradient(135deg, var(--navy) 0%, var(--midnight) 50%, var(--teal) 130%);
   --gradient-highlight: linear-gradient(90deg, var(--aqua), var(--mint));
   --gradient-soft: linear-gradient(135deg, var(--mint), var(--ice));
-  --shadow-layered: 0 1px 2px oklch(0.264 0.068 255.3 / 0.06), 0 8px 24px -8px oklch(0.264 0.068 255.3 / 0.14), 0 24px 48px -24px oklch(0.264 0.068 255.3 / 0.18);
-  --background: oklch(0.983 0.004 236.5);
+  --gradient-primary: linear-gradient(135deg, var(--teal), var(--aqua));
+  --shadow-layered: 0 1px 2px rgb(11 37 69 / 0.06), 0 8px 24px -8px rgb(11 37 69 / 0.14), 0 24px 48px -24px rgb(11 37 69 / 0.18);
+  --shadow-card: 0 1px 2px rgb(11 37 69 / 0.05), 0 8px 24px -12px rgb(11 37 69 / 0.12);
+  --shadow-card-hover: 0 2px 4px rgb(11 37 69 / 0.06), 0 16px 32px -12px rgb(11 37 69 / 0.18);
+  --background: #F7FAFC;
   --foreground: oklch(0.264 0.068 255.3);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.24 0.035 250);
@@ -179,11 +182,61 @@
 
 @utility bg-hero { background: var(--gradient-hero); }
 @utility bg-soft { background: var(--gradient-soft); }
+@utility bg-primary-gradient { background: var(--gradient-primary); }
 @utility text-gradient { background: var(--gradient-highlight); -webkit-background-clip: text; background-clip: text; color: transparent; }
 @utility shadow-layered { box-shadow: var(--shadow-layered); }
 @utility dots { background-image: radial-gradient(currentColor 1px, transparent 1px); background-size: 22px 22px; }
-@utility glass { background: oklch(1 0 0 / 0.72); backdrop-filter: blur(16px) saturate(140%); }
-@utility glass-dark { background: oklch(1 0 0 / 0.1); backdrop-filter: blur(16px); }
+@utility glass { background: rgb(255 255 255 / 0.72); backdrop-filter: blur(16px) saturate(140%); }
+@utility glass-dark { background: rgb(255 255 255 / 0.1); backdrop-filter: blur(16px); }
+
+/* Reusable MedBridge components */
+@utility card {
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-card-hover);
+  }
+}
+@utility btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  background: var(--gradient-primary);
+  color: #fff;
+  font-weight: 600;
+  padding: 0.625rem 1.5rem;
+  box-shadow: 0 4px 14px -4px rgb(29 127 168 / 0.5);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  &:hover { transform: translateY(-1px); filter: brightness(1.05); box-shadow: 0 8px 20px -6px rgb(29 127 168 / 0.55); }
+}
+@utility btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+  color: var(--color-foreground);
+  font-weight: 600;
+  padding: 0.625rem 1.5rem;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  &:hover { transform: translateY(-1px); border-color: var(--teal); background: var(--ice); }
+}
+@utility icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: var(--mint);
+  color: var(--teal);
+}
 
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease-out, transform .7s ease-out; }
 .reveal.is-visible { opacity: 1; transform: none; }
