@@ -22,6 +22,13 @@
       "when": 1791912765591,
       "tag": "0002_user_roles",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791912912750,
+      "tag": "0003_lock_definer_functions",
+      "breakpoints": true
     }
   ]
 }
