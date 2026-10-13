@@ -1,3 +1,4 @@
+import type { Report } from "./reports";
 // Symptom list is the curated Swiss SNOMED CT set. Briefing text is still example content.
 
 export const ROLES = ["Doctor", "Nurse", "Interpreter", "Other"] as const;
@@ -126,7 +127,7 @@ export type NoteRecord = {
   createdAt: string;
 };
 
-export type Reply = { id: string; author: string; text: string; createdAt: string; replies?: Reply[] };
+export type Reply = { id: string; author: string; text: string; createdAt: string; replies?: Reply[]; reports?: Report[] | undefined; hidden?: boolean | undefined };
 
 export type Post = {
   id: string;
@@ -138,6 +139,8 @@ export type Post = {
   helpful: number;
   language: string;
   replies: Reply[];
+  reports?: Report[] | undefined;
+  hidden?: boolean | undefined;
 };
 
 export const COMMUNITY_CATEGORIES = ["All", "Communication", "Cultural context", "Interpreting", "Family care"];

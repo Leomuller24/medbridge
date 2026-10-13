@@ -50,7 +50,8 @@ const LANG_CHIP: Record<string, string> = {
 
 function Dashboard() {
   const { data: profile, isLoading } = useProfile();
-  const { cases, notes, posts } = useStore();
+  const { cases, notes, posts: allPosts } = useStore();
+  const posts = allPosts.filter((p) => !p.hidden);
   const navigate = useNavigate();
 
   useEffect(() => {
