@@ -7,7 +7,7 @@ const DAY = 24 * 60 * 60 * 1000;
 
 export type Activity = { type: "post" | "comment"; at: string };
 
-type UserLike = Pick<User, "created_at" | "app_metadata"> & { email_confirmed_at?: string | null };
+type UserLike = Pick<User, "created_at" | "app_metadata"> & { email_confirmed_at?: string | null | undefined };
 
 export function isVerified(user: UserLike | null | undefined): boolean {
   if (!user) return false;
