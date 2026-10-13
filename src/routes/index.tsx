@@ -105,13 +105,16 @@ function WelcomeHeader() {
 
 /* 2. Hero */
 function Hero() {
-  const chips = [
-    { icon: ShieldCheck, text: "No patient data stored" },
-    { icon: HeartHandshake, text: "Free to use" },
-    { icon: Languages, text: "Available in 5 languages" },
-  ];
   return (
     <section className="relative isolate overflow-hidden bg-hero text-primary-foreground">
+      {/* Soft blurred blobs */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+        <div className="absolute -left-32 -top-24 size-[30rem] rounded-full bg-aqua/20 blur-3xl" />
+        <div className="absolute -right-28 top-1/3 size-[26rem] rounded-full bg-teal/50 blur-3xl" />
+        <div className="absolute bottom-0 left-1/3 size-80 rounded-full bg-mint/10 blur-3xl" />
+        {/* Faint dot pattern */}
+        <div className="absolute inset-0 dots text-primary-foreground/[0.07]" />
+      </div>
       <FloatingShapes />
       <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-5 pb-24 pt-16 sm:px-8 lg:grid-cols-[1.1fr_1fr] lg:px-10 lg:pb-32 lg:pt-24">
         <div className="animate-fade-up">
@@ -121,10 +124,9 @@ function Hero() {
           <h1 className="mt-6 text-5xl font-extrabold leading-[1.05] sm:text-6xl lg:text-[56px] xl:text-[64px]">
             Better conversations with <span className="text-gradient">every patient</span>
           </h1>
-          <div className="mt-6 max-w-xl space-y-2 text-lg leading-8 text-primary-foreground/80">
-            <p>MedBridge gives Swiss healthcare providers cultural and communication context when caring for migrant patients.</p>
-            <p>It supports clearer conversations with practical translations and contextual guidance, without diagnosing or offering medical advice.</p>
-          </div>
+          <p className="mt-6 max-w-xl text-lg leading-8 text-primary-foreground/80">
+            MedBridge gives Swiss healthcare providers cultural and communication context when caring for migrant patients — practical translations and guidance, never diagnosis or medical advice.
+          </p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg" className="h-12 rounded-full bg-aqua px-7 text-navy shadow-layered transition hover:-translate-y-0.5 hover:bg-mint">
               <Link to="/register"><Rocket aria-hidden="true" /> Get started <ArrowRight aria-hidden="true" /></Link>
@@ -133,13 +135,6 @@ function Hero() {
               <Link to="/login"><LogIn aria-hidden="true" /> Log in</Link>
             </Button>
           </div>
-          <ul className="mt-8 flex flex-wrap gap-2.5">
-            {chips.map(({ icon: Icon, text }) => (
-              <li key={text} className="glass-dark flex items-center gap-2 rounded-full border border-primary-foreground/15 px-3.5 py-1.5 text-sm">
-                <Icon aria-hidden="true" className="size-4 text-aqua" /> {text}
-              </li>
-            ))}
-          </ul>
         </div>
         <HeroCards />
       </div>
