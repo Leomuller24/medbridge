@@ -6,3 +6,4 @@
 - [ ] Optional Source link field on posts
 - [ ] Database security review: RLS on every table, no names/birth dates/addresses, list tables + policies
 - [ ] "Need an interpreter now?" card on dashboard and case page
+- [ ] Handover card per case (code, language, interpreter needed, communication prefs, agreed-to-share notes) with Print + offline QR
