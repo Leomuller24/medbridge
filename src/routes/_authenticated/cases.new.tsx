@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_authenticated/cases/new")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  validateSearch: (s: Record<string, unknown>): { symptom?: string } => (typeof s.symptom === "string" ? { symptom: s.symptom } : {}),
+  validateSearch: (s: Record<string, unknown>): { symptom?: string } => (typeof s["symptom"] === "string" ? { symptom: s["symptom"] } : {}),
   component: NewCase,
 });
 
