@@ -68,6 +68,9 @@ export function searchAll(query: string, opts: { language?: string | undefined; 
       const tr = findMatch(query, tag);
       if (tr) { articles.push({ article: a, field: "tag", text: tag, range: tr }); break; }
     }
+    if (articles.at(-1)?.article === a) continue;
+    const sr = findMatch(query, a.summary);
+    if (sr) articles.push({ article: a, field: "summary", text: a.summary, range: sr });
   }
   const posts: PostHit[] = [];
   for (const p of opts.posts) {
