@@ -41,12 +41,14 @@ function useActive() {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const isActive = useActive();
+  const { data: isAdmin = false } = useIsAdmin();
+  const nav = useMemo(() => NAV.filter((item) => !item.adminOnly || isAdmin), [isAdmin]);
   return (
     <div className="min-h-screen bg-background">
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col bg-navy px-4 py-6 md:flex">
         <Link to="/dashboard" className="px-2"><Logo inverted /></Link>
         <nav aria-label="Primary navigation" className="mt-10 flex flex-col gap-1">
-          {NAV.map((item) => {
+          {nav.map((item) => {
             const active = isActive(item);
             return (
               <Link
