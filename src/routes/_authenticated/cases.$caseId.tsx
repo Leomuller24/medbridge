@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { PageShell, formatDate } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import { GlobalSearch } from "@/components/global-search";
+import { HandoverCard } from "@/components/handover-card";
+import { InterpreterCard } from "@/components/interpreter-card";
 import { newId, updateStore, useStore } from "@/lib/local-store";
 import { type Briefing, getBriefing } from "@/lib/medbridge-data";
 
@@ -84,7 +86,7 @@ function CasePage() {
           </div>
           <div className="flex gap-2 print:hidden">
             <Button variant="secondary" disabled={!briefings.length} onClick={saveToNotes}><Save aria-hidden="true" /> Save to Notes</Button>
-            <Button disabled={!briefings.length} onClick={() => window.print()}><Printer aria-hidden="true" /> Print handover</Button>
+            <Button onClick={() => document.getElementById("handover-card")?.scrollIntoView({ behavior: "smooth" })}><Printer aria-hidden="true" /> Print handover</Button>
           </div>
         </div>
 
@@ -204,6 +206,9 @@ function CasePage() {
           )}
         </section>
       </div>
+
+      <HandoverCard record={record} notes={caseNotes} />
+      <div className="mt-6"><InterpreterCard /></div>
 
       <p className="mt-8 text-xs text-muted-foreground">Printed summaries are created in your browser only. MedBridge does not store patient data.</p>
     </PageShell>

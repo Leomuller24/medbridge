@@ -96,10 +96,12 @@ function CommunityPage() {
 
                   <Link to="/community/$postId" params={{ postId: p.id }} className="mt-3 block text-lg font-semibold text-navy hover:text-primary">{p.title}</Link>
                   <p className="mt-1.5 line-clamp-2 text-sm leading-6 text-muted-foreground">{p.body}</p>
+                  {p.source && <a href={p.source} target="_blank" rel="noopener noreferrer nofollow" className="mt-2 block truncate text-xs text-primary hover:underline">Source: {p.source}</a>}
 
                   <div className="mt-3 flex flex-wrap gap-2">
                     <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">{p.category}</span>
                     <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">{p.language}</span>
+                    <span className="rounded-full bg-accent px-3 py-1 text-xs font-medium text-primary">Shared experience, not medical advice</span>
                   </div>
 
                   <div className="mt-4 flex flex-wrap items-center gap-5 border-t border-border pt-4 text-sm text-muted-foreground">
@@ -133,7 +135,7 @@ function CommunityPage() {
           <section className="card bg-secondary/60">
             <p className="flex items-center gap-2 text-sm font-semibold text-navy"><Users aria-hidden="true" className="size-4 text-primary" /> Privacy reminder</p>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">Posts stay in your own browser in this version. MedBridge does not store patient data.</p>
-            <Link to="/moderation" className="mt-3 inline-block text-sm font-medium text-primary hover:underline">Moderation queue</Link>
+            <Link to="/moderation" className="mt-3 inline-block text-sm font-medium text-primary hover:underline">AI moderation</Link>
           </section>
         </aside>
       </div>

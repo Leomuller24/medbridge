@@ -1,19 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ShieldAlert } from "lucide-react";
-import { toast } from "sonner";
+import { ArrowLeft, Bot, ShieldAlert } from "lucide-react";
+import { useState } from "react";
 
-import { PageShell } from "@/components/page-shell";
+import { PageShell, formatDate } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
-import { updateStore, useStore } from "@/lib/local-store";
-import { moderationQueue, removeReply, setReplyHidden, type QueueItem } from "@/lib/reports";
+import { useAiReview } from "@/hooks/use-ai-review";
+import { useStore } from "@/lib/local-store";
+import { moderationQueue } from "@/lib/reports";
 
 export const Route = createFileRoute("/_authenticated/moderation")({
   head: () => ({
     meta: [
-      { title: "Moderation queue — MedBridge" },
-      { name: "description", content: "Review community posts and comments hidden after reports." },
-      { property: "og:title", content: "Moderation queue — MedBridge" },
-      { property: "og:description", content: "Review community posts and comments hidden after reports." },
+      { title: "AI moderation — MedBridge" },
+      { name: "description", content: "How the MedBridge AI moderator handled reported posts and comments." },
+      { property: "og:title", content: "AI moderation — MedBridge" },
+      { property: "og:description", content: "How the MedBridge AI moderator handled reported posts and comments." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -22,47 +23,49 @@ export const Route = createFileRoute("/_authenticated/moderation")({
 });
 
 function ModerationPage() {
-  const { posts } = useStore();
+  const { posts, modLog } = useStore();
   const queue = moderationQueue(posts);
+  const review = useAiReview();
+  const [busy, setBusy] = useState<string | null>(null);
 
-  function restore(item: QueueItem) {
-    updateStore((s) => ({
-      ...s,
-      posts: s.posts.map((p) => (p.id !== item.postId ? p : item.kind === "post" ? { ...p, hidden: false, reports: [] } : { ...p, replies: setReplyHidden(p.replies, item.id, false) })),
-    }));
-    toast.success("Restored");
-  }
-
-  function remove(item: QueueItem) {
-    updateStore((s) => ({
-      ...s,
-      posts: item.kind === "post" ? s.posts.filter((p) => p.id !== item.id) : s.posts.map((p) => (p.id === item.postId ? { ...p, replies: removeReply(p.replies, item.id) } : p)),
-    }));
-    toast.success("Removed");
+  async function retry(id: string) {
+    setBusy(id);
+    await review(id);
+    setBusy(null);
   }
 
   return (
-    <PageShell eyebrow="Community" title="Moderation queue">
+    <PageShell eyebrow="Community" title="AI moderation">
       <Link to="/community" className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"><ArrowLeft className="size-4" /> Back to feed</Link>
-      <div className="mt-6 space-y-4">
-        {queue.length === 0 && <p className="card text-muted-foreground">Nothing to review. Posts and comments appear here once they receive 3 reports.</p>}
-        {queue.map((item) => {
-          const counts = item.reports.reduce<Record<string, number>>((acc, r) => ({ ...acc, [r.reason]: (acc[r.reason] ?? 0) + 1 }), {});
-          return (
-            <article key={item.id} className="card">
-              <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-destructive"><ShieldAlert className="size-4" /> Hidden {item.kind} · {item.reports.length} reports</p>
-              <p className="mt-2 font-semibold text-navy">{item.text}</p>
-              <p className="text-xs text-muted-foreground">by {item.author}</p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {Object.entries(counts).map(([reason, n]) => <span key={reason} className="rounded-full bg-destructive/10 px-3 py-1 text-xs font-medium text-destructive">{reason} × {n}</span>)}
-              </div>
-              <div className="mt-4 flex gap-3">
-                <Button variant="outline" onClick={() => restore(item)}>Restore</Button>
-                <Button variant="destructive" onClick={() => remove(item)}>Remove</Button>
-              </div>
-            </article>
-          );
-        })}
+      <p className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground">Posts and comments with 3 reports are hidden and reviewed by an AI moderator, which removes them or restores them with a short reason.</p>
+
+      <h2 className="mt-8 text-lg font-semibold text-navy">Waiting for review</h2>
+      <div className="mt-3 space-y-4">
+        {queue.length === 0 && <p className="card text-sm text-muted-foreground">Nothing waiting.</p>}
+        {queue.map((item) => (
+          <article key={item.id} className="card">
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-destructive"><ShieldAlert className="size-4" /> Hidden {item.kind} · {item.reports.length} reports</p>
+            <p className="mt-2 font-semibold text-navy">{item.text}</p>
+            <Button className="mt-4" variant="outline" disabled={busy === item.id} onClick={() => retry(item.id)}>
+              <Bot aria-hidden="true" /> {busy === item.id ? "Reviewing…" : "Ask AI to review"}
+            </Button>
+          </article>
+        ))}
+      </div>
+
+      <h2 className="mt-10 text-lg font-semibold text-navy">AI decisions</h2>
+      <div className="mt-3 space-y-4">
+        {modLog.length === 0 && <p className="card text-sm text-muted-foreground">No decisions yet.</p>}
+        {modLog.map((e) => (
+          <article key={`${e.id}-${e.at}`} className="card">
+            <p className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+              <span className={`rounded-full px-3 py-1 font-semibold ${e.decision === "remove" ? "bg-destructive/10 text-destructive" : "bg-accent text-primary"}`}>{e.decision === "remove" ? "Removed" : "Restored"}</span>
+              {e.kind} by {e.author} · {formatDate(e.at)}
+            </p>
+            <p className="mt-2 font-medium text-navy">{e.text}</p>
+            <p className="mt-1 flex items-start gap-2 text-sm text-muted-foreground"><Bot aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-primary" /> {e.reason}</p>
+          </article>
+        ))}
       </div>
     </PageShell>
   );

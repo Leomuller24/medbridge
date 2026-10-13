@@ -41,3 +41,33 @@ export function moderationQueue(posts: Post[]): QueueItem[] {
   }
   return out;
 }
+
+export type ModLogEntry = { id: string; kind: "post" | "comment"; text: string; author: string; decision: "remove" | "restore"; reason: string; at: string };
+
+export function findQueueItem(posts: Post[], id: string): QueueItem | undefined {
+  return moderationQueue(posts).find((q) => q.id === id);
+}
+
+/** Apply an AI moderator decision to the posts list. */
+export function applyDecision(posts: Post[], item: QueueItem, decision: "remove" | "restore"): Post[] {
+  if (item.kind === "post") {
+    return decision === "remove" ? posts.filter((p) => p.id !== item.id) : posts.map((p) => (p.id === item.id ? { ...p, hidden: false, reports: [] } : p));
+  }
+  return posts.map((p) => (p.id !== item.postId ? p : { ...p, replies: decision === "remove" ? removeReply(p.replies, item.id) : setReplyHidden(p.replies, item.id, false) }));
+}
+
+/** Every post or comment with at least one report, hidden or not. */
+export function reportedItems(posts: Post[]): QueueItem[] {
+  const out: QueueItem[] = [];
+  const walk = (postId: string, list: Reply[]) => list.forEach((r) => {
+    if (r.reports?.length) out.push({ kind: "comment", postId, id: r.id, text: r.text, author: r.author, reports: r.reports });
+    walk(postId, r.replies ?? []);
+  });
+  for (const p of posts) {
+    if (p.reports?.length) out.push({ kind: "post", postId: p.id, id: p.id, text: p.title, author: p.author, reports: p.reports });
+    walk(p.id, p.replies);
+  }
+  return out;
+}
+
+export type Warning = { author: string; itemId: string; at: string };

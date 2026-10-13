@@ -175,6 +175,9 @@
 
 @media print {
   header, .print\:hidden { display: none !important; }
+  body.printing-handover * { visibility: hidden; }
+  body.printing-handover #handover-card, body.printing-handover #handover-card * { visibility: visible; }
+  body.printing-handover #handover-card { position: absolute; inset: 0 auto auto 0; width: 100%; box-shadow: none; }
 }
 
 @keyframes float { 0%,100% { transform: translateY(0) rotate(var(--tilt, 0deg)); } 50% { transform: translateY(-12px) rotate(var(--tilt, 0deg)); } }
