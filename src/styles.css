@@ -182,11 +182,61 @@
 
 @utility bg-hero { background: var(--gradient-hero); }
 @utility bg-soft { background: var(--gradient-soft); }
+@utility bg-primary-gradient { background: var(--gradient-primary); }
 @utility text-gradient { background: var(--gradient-highlight); -webkit-background-clip: text; background-clip: text; color: transparent; }
 @utility shadow-layered { box-shadow: var(--shadow-layered); }
 @utility dots { background-image: radial-gradient(currentColor 1px, transparent 1px); background-size: 22px 22px; }
-@utility glass { background: oklch(1 0 0 / 0.72); backdrop-filter: blur(16px) saturate(140%); }
-@utility glass-dark { background: oklch(1 0 0 / 0.1); backdrop-filter: blur(16px); }
+@utility glass { background: rgb(255 255 255 / 0.72); backdrop-filter: blur(16px) saturate(140%); }
+@utility glass-dark { background: rgb(255 255 255 / 0.1); backdrop-filter: blur(16px); }
+
+/* Reusable MedBridge components */
+@utility card {
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-card-hover);
+  }
+}
+@utility btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  background: var(--gradient-primary);
+  color: #fff;
+  font-weight: 600;
+  padding: 0.625rem 1.5rem;
+  box-shadow: 0 4px 14px -4px rgb(29 127 168 / 0.5);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  &:hover { transform: translateY(-1px); filter: brightness(1.05); box-shadow: 0 8px 20px -6px rgb(29 127 168 / 0.55); }
+}
+@utility btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+  color: var(--color-foreground);
+  font-weight: 600;
+  padding: 0.625rem 1.5rem;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  &:hover { transform: translateY(-1px); border-color: var(--teal); background: var(--ice); }
+}
+@utility icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: var(--mint);
+  color: var(--teal);
+}
 
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease-out, transform .7s ease-out; }
 .reveal.is-visible { opacity: 1; transform: none; }
