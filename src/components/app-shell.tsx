@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { BookOpen, FolderOpen, Globe, Home, LogOut, NotebookPen, Search, Settings, UsersRound, type LucideIcon } from "lucide-react";
+import { BookOpen, FolderOpen, Globe, Home, LogOut, NotebookPen, Search, Settings, ShieldCheck, UsersRound, type LucideIcon } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 
@@ -13,13 +13,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useIsAdmin } from "@/hooks/use-is-admin";
 import { useSession } from "@/hooks/use-session";
 import { supabase } from "@/integrations/supabase/client";
 import { useStore } from "@/lib/local-store";
 import { searchAll } from "@/lib/search";
 import { cn } from "@/lib/utils";
 
-type NavItem = { label: string; to: "/dashboard" | "/cases/new" | "/notes" | "/community" | "/resources" | "/settings"; match: string; icon: LucideIcon };
+type NavItem = { label: string; to: "/dashboard" | "/cases/new" | "/notes" | "/community" | "/resources" | "/settings" | "/admin"; match: string; icon: LucideIcon; adminOnly?: boolean };
 
 const NAV: NavItem[] = [
   { label: "Home", to: "/dashboard", match: "/dashboard", icon: Home },
@@ -28,6 +29,7 @@ const NAV: NavItem[] = [
   { label: "Community", to: "/community", match: "/community", icon: UsersRound },
   { label: "Resources", to: "/resources", match: "/resources", icon: BookOpen },
   { label: "Settings", to: "/settings", match: "/settings", icon: Settings },
+  { label: "Admin", to: "/admin", match: "/admin", icon: ShieldCheck, adminOnly: true },
 ];
 
 const LANGS = ["EN", "FR", "DE", "IT"] as const;
@@ -39,12 +41,14 @@ function useActive() {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const isActive = useActive();
+  const { data: isAdmin = false } = useIsAdmin();
+  const nav = useMemo(() => NAV.filter((item) => !item.adminOnly || isAdmin), [isAdmin]);
   return (
     <div className="min-h-screen bg-background">
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col bg-navy px-4 py-6 md:flex">
         <Link to="/dashboard" className="px-2"><Logo inverted /></Link>
         <nav aria-label="Primary navigation" className="mt-10 flex flex-col gap-1">
-          {NAV.map((item) => {
+          {nav.map((item) => {
             const active = isActive(item);
             return (
               <Link
@@ -70,8 +74,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="pb-20 md:pb-0">{children}</div>
       </div>
 
-      <nav aria-label="Mobile navigation" className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-6 border-t border-border bg-card/95 backdrop-blur md:hidden">
-        {NAV.map((item) => {
+      <nav aria-label="Mobile navigation" className="fixed inset-x-0 bottom-0 z-40 grid border-t border-border bg-card/95 backdrop-blur md:hidden" style={{ gridTemplateColumns: `repeat(${nav.length}, minmax(0, 1fr))` }}>
+        {nav.map((item) => {
           const active = isActive(item);
           return (
             <Link key={item.label} to={item.to} aria-current={active ? "page" : undefined}
@@ -164,6 +168,7 @@ function AvatarMenu() {
   const { session } = useSession();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { data: isAdmin = false } = useIsAdmin();
   const email = session?.user.email ?? "";
   const name = (session?.user.user_metadata?.["full_name"] as string | undefined) ?? email;
   const initials = (name || "?").slice(0, 2).toUpperCase();
@@ -177,6 +182,7 @@ function AvatarMenu() {
         <DropdownMenuLabel className="truncate font-normal text-muted-foreground">{email}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => navigate({ to: "/settings" })}><Settings className="size-4" /> Settings</DropdownMenuItem>
+        {isAdmin && <DropdownMenuItem onClick={() => navigate({ to: "/admin" })}><ShieldCheck className="size-4" /> Admin</DropdownMenuItem>}
         <DropdownMenuItem
           onClick={async () => {
             await queryClient.cancelQueries();
