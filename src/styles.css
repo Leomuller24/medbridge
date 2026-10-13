@@ -19,7 +19,18 @@
  */
 
 @theme inline {
-  --font-sans: "Manrope", sans-serif;
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Plus Jakarta Sans", "Inter", sans-serif;
+  --color-navy: var(--navy);
+  --color-midnight: var(--midnight);
+  --color-teal: var(--teal);
+  --color-aqua: var(--aqua);
+  --color-mint: var(--mint);
+  --color-ice: var(--ice);
+  --color-coral: var(--coral);
+  --color-amber: var(--amber);
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-fade-up: fade-up 0.7s ease-out both;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -63,14 +74,26 @@
 }
 
 :root {
-  --radius: 0.75rem;
-  --background: oklch(0.985 0.006 240);
-  --foreground: oklch(0.24 0.035 250);
+  --radius: 1rem;
+  --navy: oklch(0.264 0.068 255.3);
+  --midnight: oklch(0.316 0.085 257.8);
+  --teal: oklch(0.562 0.106 231.9);
+  --aqua: oklch(0.758 0.117 189.4);
+  --mint: oklch(0.948 0.022 179.2);
+  --ice: oklch(0.959 0.013 241);
+  --coral: oklch(0.687 0.151 33.4);
+  --amber: oklch(0.82 0.147 81.2);
+  --gradient-hero: radial-gradient(60% 80% at 85% 20%, oklch(0.562 0.106 231.9 / 0.55), transparent 70%), linear-gradient(135deg, var(--navy) 0%, var(--midnight) 50%, var(--teal) 130%);
+  --gradient-highlight: linear-gradient(90deg, var(--aqua), var(--mint));
+  --gradient-soft: linear-gradient(135deg, var(--mint), var(--ice));
+  --shadow-layered: 0 1px 2px oklch(0.264 0.068 255.3 / 0.06), 0 8px 24px -8px oklch(0.264 0.068 255.3 / 0.14), 0 24px 48px -24px oklch(0.264 0.068 255.3 / 0.18);
+  --background: oklch(0.983 0.004 236.5);
+  --foreground: oklch(0.264 0.068 255.3);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.24 0.035 250);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.24 0.035 250);
-  --primary: oklch(0.54 0.15 248);
+  --primary: oklch(0.562 0.106 231.9);
   --primary-foreground: oklch(0.99 0.004 240);
   --secondary: oklch(0.94 0.025 240);
   --secondary-foreground: oklch(0.35 0.08 248);
@@ -138,6 +161,7 @@
     border-color: var(--color-border);
   }
 
+  h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
@@ -148,4 +172,23 @@
 
 @media print {
   header, .print\:hidden { display: none !important; }
+}
+
+@keyframes float { 0%,100% { transform: translateY(0) rotate(var(--tilt, 0deg)); } 50% { transform: translateY(-12px) rotate(var(--tilt, 0deg)); } }
+@keyframes fade-up { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+
+@utility bg-hero { background: var(--gradient-hero); }
+@utility bg-soft { background: var(--gradient-soft); }
+@utility text-gradient { background: var(--gradient-highlight); -webkit-background-clip: text; background-clip: text; color: transparent; }
+@utility shadow-layered { box-shadow: var(--shadow-layered); }
+@utility dots { background-image: radial-gradient(currentColor 1px, transparent 1px); background-size: 22px 22px; }
+@utility glass { background: oklch(1 0 0 / 0.72); backdrop-filter: blur(16px) saturate(140%); }
+@utility glass-dark { background: oklch(1 0 0 / 0.1); backdrop-filter: blur(16px); }
+
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease-out, transform .7s ease-out; }
+.reveal.is-visible { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .reveal { opacity: 1; transform: none; }
 }
