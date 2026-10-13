@@ -182,6 +182,7 @@ function AvatarMenu() {
         <DropdownMenuLabel className="truncate font-normal text-muted-foreground">{email}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => navigate({ to: "/settings" })}><Settings className="size-4" /> Settings</DropdownMenuItem>
+        {isAdmin && <DropdownMenuItem onClick={() => navigate({ to: "/admin" })}><ShieldCheck className="size-4" /> Admin</DropdownMenuItem>}
         <DropdownMenuItem
           onClick={async () => {
             await queryClient.cancelQueries();
