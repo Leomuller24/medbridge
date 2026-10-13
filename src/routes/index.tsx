@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  AlertTriangle, ArrowRight, BookOpen, Check, ChevronLeft, ChevronRight, Globe, HeartHandshake, HelpCircle, Languages, LogIn,
-  MessageCircleMore, NotebookPen, Quote, Rocket, Search, ShieldCheck, Sparkles, Stethoscope, UsersRound,
+  AlertTriangle, ArrowRight, BookOpen, Check, Globe, HeartHandshake, HelpCircle, Languages, LogIn,
+  MessageCircleMore, NotebookPen, Rocket, Search, ShieldCheck, Sparkles, Stethoscope, UsersRound,
 } from "lucide-react";
-import { useState } from "react";
 import { toast } from "sonner";
 
 import { Logo } from "@/components/logo";
@@ -42,12 +41,9 @@ function Index() {
       <WelcomeHeader />
       <main>
         <Hero />
-        <Credibility />
         <Features />
         <HowItWorks />
-        <Showcase />
         <Impact />
-        <Testimonials />
         <Faq />
         <Cta />
       </main>
@@ -192,24 +188,6 @@ function HeroCards() {
 }
 
 /* 3. Credibility strip */
-function Credibility() {
-  const badges = ["Clinic partner", "Interpreter network", "Community association", "Nursing school", "Health centre"];
-  return (
-    <section className="mx-auto max-w-7xl px-5 py-12 sm:px-8 lg:px-10">
-      <Reveal>
-        <p className="text-center text-sm font-medium text-muted-foreground">Designed with input from clinicians, interpreters and migrant communities</p>
-        <ul className="mt-6 flex flex-wrap justify-center gap-3">
-          {badges.map((b) => (
-            <li key={b} className="flex items-center gap-2 rounded-full border border-border bg-card px-5 py-2.5 text-sm font-semibold text-muted-foreground shadow-sm grayscale transition hover:grayscale-0">
-              <HeartHandshake aria-hidden="true" className="size-4 text-primary" /> {b} <span className="text-xs font-normal">(placeholder)</span>
-            </li>
-          ))}
-        </ul>
-      </Reveal>
-    </section>
-  );
-}
-
 /* 4. Features */
 const FEATURES = [
   { icon: Languages, title: "Symptom translation", text: "Search 38 SNOMED symptoms by name, everyday words or the patient's language.", tint: "bg-ice text-primary" },
@@ -222,7 +200,7 @@ const FEATURES = [
 
 function Features() {
   return (
-    <section id="features" className="relative scroll-mt-20 overflow-hidden bg-ice py-20 lg:py-28">
+    <section id="features" className="relative scroll-mt-20 overflow-hidden bg-background py-20 lg:py-28">
       <div aria-hidden="true" className="absolute inset-0 dots text-primary/10" />
       <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
         <Reveal className="max-w-2xl">
@@ -257,7 +235,7 @@ function HowItWorks() {
     { title: "Save or hand over", text: "Save the card to Notes or print a handover summary.", art: HandoverIllustration },
   ];
   return (
-    <section id="how-it-works" className="scroll-mt-20 bg-background py-20 lg:py-28">
+    <section id="how-it-works" className="scroll-mt-20 bg-ice py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
         <Reveal className="mx-auto max-w-2xl text-center">
           <Label>How it works</Label>
@@ -267,8 +245,8 @@ function HowItWorks() {
           <div aria-hidden="true" className="absolute left-[16%] right-[16%] top-7 hidden h-0.5 bg-gradient-to-r from-teal via-aqua to-mint md:block" />
           {steps.map(({ title, text, art: Art }, i) => (
             <Reveal key={title} delay={i * 120} className="relative text-center">
-              <span className="relative mx-auto grid size-14 place-items-center rounded-full bg-primary font-display text-xl font-extrabold text-primary-foreground shadow-layered ring-8 ring-background">{i + 1}</span>
-              <div className={`${card} mt-8 bg-soft p-6`}>
+              <span className="relative mx-auto grid size-14 place-items-center rounded-full bg-primary font-display text-xl font-extrabold text-primary-foreground shadow-layered ring-8 ring-ice">{i + 1}</span>
+              <div className={`${card} mt-8 p-6`}>
                 <div className="mx-auto h-36 max-w-[220px]"><Art /></div>
                 <h3 className="mt-4 text-lg font-bold text-foreground">{title}</h3>
                 <p className="mt-1.5 text-sm text-muted-foreground">{text}</p>
@@ -276,81 +254,6 @@ function HowItWorks() {
             </Reveal>
           ))}
         </div>
-      </div>
-    </section>
-  );
-}
-
-/* 6. Product showcase */
-const TABS = [
-  { id: "Search", icon: Search },
-  { id: "Case", icon: Stethoscope },
-  { id: "Notes", icon: NotebookPen },
-] as const;
-
-function Showcase() {
-  const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("Search");
-  return (
-    <section className="relative overflow-hidden bg-ice py-20 lg:py-28">
-      <div aria-hidden="true" className="absolute -right-32 top-0 size-[30rem] rounded-full bg-aqua/20 blur-3xl" />
-      <div className="relative mx-auto max-w-6xl px-5 sm:px-8 lg:px-10">
-        <Reveal className="text-center">
-          <Label>Product tour</Label>
-          <h2 className="mt-3 text-4xl font-bold text-foreground sm:text-5xl">Everything in one calm workspace</h2>
-          <div role="tablist" aria-label="Product tour" className="mx-auto mt-8 inline-flex gap-1 rounded-full border border-border bg-card p-1.5 shadow-sm">
-            {TABS.map(({ id, icon: Icon }) => (
-              <button key={id} role="tab" aria-selected={tab === id} type="button" onClick={() => setTab(id)}
-                className={cn("flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold transition", tab === id ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:text-foreground")}>
-                <Icon aria-hidden="true" className="size-4" /> {id}
-              </button>
-            ))}
-          </div>
-        </Reveal>
-        <Reveal delay={100}>
-          <div aria-hidden="true" className="mt-10 overflow-hidden rounded-[20px] border border-border bg-card shadow-2xl">
-            <div className="flex items-center gap-2 border-b border-border bg-muted px-4 py-3">
-              <span className="size-3 rounded-full bg-coral" /><span className="size-3 rounded-full bg-amber" /><span className="size-3 rounded-full bg-aqua" />
-              <span className="ml-4 flex-1 rounded-full bg-card px-4 py-1 text-xs text-muted-foreground">medbridge.app/{tab.toLowerCase()}</span>
-            </div>
-            <div className="grid min-h-[340px] grid-cols-[180px_1fr] max-sm:grid-cols-1">
-              <div className="space-y-2 bg-navy p-4 max-sm:hidden">
-                <Logo inverted className="mb-6 scale-90" />
-                {["Home", "Cases", "Search", "Notes", "Community"].map((n) => (
-                  <div key={n} className={cn("rounded-lg px-3 py-2 text-sm text-primary-foreground/70", (n === tab || (tab === "Case" && n === "Cases")) && "bg-teal/40 text-primary-foreground")}>{n}</div>
-                ))}
-              </div>
-              <div key={tab} className="animate-fade-up p-6">
-                {tab === "Search" && (
-                  <>
-                    <div className="flex items-center gap-3 rounded-2xl border border-border px-4 py-3 text-muted-foreground"><Search className="size-5" /> hedache</div>
-                    <p className="mt-5 text-xs font-semibold uppercase tracking-wider text-primary">Symptoms</p>
-                    {["Headache · Pain · 25064002", "Head pain → Headache", "baş ağrısı (Turkish) → Headache"].map((r) => <div key={r} className="mt-2 rounded-lg bg-ice px-4 py-2.5 text-sm text-navy">{r}</div>)}
-                    <p className="mt-5 text-xs font-semibold uppercase tracking-wider text-primary">Articles</p>
-                    <div className="mt-2 rounded-lg bg-mint px-4 py-2.5 text-sm text-navy">Body metaphors when describing pain</div>
-                  </>
-                )}
-                {tab === "Case" && (
-                  <>
-                    <div className="flex flex-wrap items-center gap-2"><span className="font-display text-xl font-bold">CASE-B07</span><span className="rounded-full bg-ice px-3 py-1 text-xs font-semibold text-navy">🇸🇦 Arabic</span><span className="rounded-full bg-amber/25 px-3 py-1 text-xs font-semibold text-navy">Interpreter needed</span></div>
-                    <div className="mt-5 flex gap-2">{["Symptoms", "Context", "Notes", "Handover"].map((s, i) => <div key={s} className="flex-1"><div className={cn("h-1.5 rounded-full", i < 2 ? "bg-primary" : "bg-muted")} /><p className="mt-1.5 text-xs text-muted-foreground">{s}</p></div>)}</div>
-                    <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                      <div className="rounded-xl bg-ice p-4 text-sm text-navy"><b>How the patient may describe it</b><p className="mt-1 text-muted-foreground">Heat or heaviness "sitting" in the belly.</p></div>
-                      <div className="rounded-xl bg-mint p-4 text-sm text-navy"><b>Suggested questions</b><p className="mt-1 text-muted-foreground">How does it affect your daily life?</p></div>
-                    </div>
-                  </>
-                )}
-                {tab === "Notes" && (
-                  <div className="space-y-3">
-                    {[["Patient preferred a professional interpreter rather than a cousin.", "Private", "bg-ice"], ["Describing tiredness as 'the soul is heavy' helped open the conversation.", "Shared", "bg-mint"]].map(([t, v, bg]) => (
-                      <div key={t} className="rounded-xl border border-border p-4 text-sm"><span className={cn("rounded-full px-2.5 py-0.5 text-xs font-semibold text-navy", bg)}>{v}</span><p className="mt-2 text-muted-foreground">{t}</p></div>
-                    ))}
-                    <div className="flex items-center gap-2 rounded-xl border border-coral/30 bg-coral/10 p-4 text-sm text-navy"><AlertTriangle className="size-4 text-coral" /> Red flag: Prefers female provider</div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </Reveal>
       </div>
     </section>
   );
@@ -365,7 +268,7 @@ function Impact() {
     { n: 1200, s: "+", label: "Community members (example)", icon: UsersRound },
   ];
   return (
-    <section className="relative isolate overflow-hidden bg-hero py-20 text-primary-foreground">
+    <section id="community" className="relative isolate scroll-mt-20 overflow-hidden bg-hero py-20 text-primary-foreground">
       <FloatingShapes />
       <div className="relative mx-auto grid max-w-7xl gap-6 px-5 sm:grid-cols-2 sm:px-8 lg:grid-cols-4 lg:px-10">
         {stats.map(({ n, s, label, icon: Icon }, i) => (
@@ -375,45 +278,6 @@ function Impact() {
             <p className="mt-1 text-sm text-primary-foreground/75">{label}</p>
           </Reveal>
         ))}
-      </div>
-    </section>
-  );
-}
-
-/* 8. Testimonials */
-const QUOTES = [
-  { name: "Example Nurse", role: "Nurse · Bern (placeholder)", initials: "EN", quote: "The family perspective section changed how I open conversations with relatives in the room." },
-  { name: "Example Interpreter", role: "Interpreter · Zürich (placeholder)", initials: "EI", quote: "Providers come into the session better prepared, so we spend less time on misunderstandings." },
-  { name: "Example Doctor", role: "GP · Lausanne (placeholder)", initials: "ED", quote: "The suggested questions are a calm way to start when I'm not sure how a patient describes pain." },
-];
-
-function Testimonials() {
-  const [i, setI] = useState(0);
-  const q = QUOTES[i]!;
-  const go = (d: number) => setI((i + d + QUOTES.length) % QUOTES.length);
-  return (
-    <section id="community" className="scroll-mt-20 bg-background py-20 lg:py-28">
-      <div className="mx-auto max-w-4xl px-5 text-center sm:px-8">
-        <Reveal>
-          <Label>Community</Label>
-          <h2 className="mt-3 text-4xl font-bold text-foreground sm:text-5xl">Learn from colleagues across Switzerland</h2>
-          <div className={`${card} relative mt-12 overflow-hidden p-10`}>
-            <Quote aria-hidden="true" className="absolute right-8 top-8 size-16 text-ice" />
-            <div key={i} className="animate-fade-up">
-              <p className="relative font-display text-xl font-semibold leading-relaxed text-foreground sm:text-2xl">“{q.quote}”</p>
-              <div className="mt-8 flex items-center justify-center gap-3">
-                <span className="grid size-12 place-items-center rounded-full bg-soft font-bold text-teal">{q.initials}</span>
-                <div className="text-left"><p className="font-semibold text-foreground">{q.name}</p><p className="text-sm text-muted-foreground">{q.role}</p></div>
-              </div>
-            </div>
-          </div>
-          <div className="mt-6 flex items-center justify-center gap-3">
-            <Button variant="outline" size="icon" className="rounded-full" aria-label="Previous testimonial" onClick={() => go(-1)}><ChevronLeft /></Button>
-            {QUOTES.map((_, k) => <button key={k} type="button" aria-label={`Show testimonial ${k + 1}`} onClick={() => setI(k)} className={cn("h-2 rounded-full transition-all", k === i ? "w-8 bg-primary" : "w-2 bg-border")} />)}
-            <Button variant="outline" size="icon" className="rounded-full" aria-label="Next testimonial" onClick={() => go(1)}><ChevronRight /></Button>
-          </div>
-          <p className="mt-4 text-xs text-muted-foreground">Testimonials are placeholder examples.</p>
-        </Reveal>
       </div>
     </section>
   );
@@ -429,7 +293,7 @@ const FAQS = [
 
 function Faq() {
   return (
-    <section id="privacy" className="scroll-mt-20 bg-ice py-20 lg:py-28">
+    <section id="privacy" className="scroll-mt-20 bg-background py-20 lg:py-28">
       <div className="mx-auto grid max-w-6xl gap-12 px-5 sm:px-8 lg:grid-cols-[1fr_1.4fr] lg:px-10">
         <Reveal>
           <Label>Privacy and FAQ</Label>
@@ -456,7 +320,7 @@ function Faq() {
 
 function Cta() {
   return (
-    <section className="bg-background px-5 py-20 sm:px-8 lg:px-10">
+    <section className="bg-ice px-5 py-20 sm:px-8 lg:px-10">
       <Reveal className="relative mx-auto max-w-6xl overflow-hidden rounded-[28px] bg-hero p-10 text-center text-primary-foreground shadow-2xl sm:p-16">
         <FloatingShapes />
         <div className="relative">
@@ -501,7 +365,7 @@ function Footer() {
       <div className="border-t border-primary-foreground/10">
         <div className="mx-auto flex max-w-7xl flex-col gap-2 px-5 py-6 text-xs text-primary-foreground/60 sm:flex-row sm:justify-between sm:px-8 lg:px-10">
           <p className="flex items-center gap-2"><ShieldCheck aria-hidden="true" className="size-4 text-aqua" /> MedBridge does not store patient data.</p>
-          <p>MedBridge is informational and does not provide medical advice or diagnosis.</p>
+          <p>MedBridge is informational only and is not medical advice.</p>
         </div>
       </div>
     </footer>
