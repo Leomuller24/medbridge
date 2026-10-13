@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { BookOpen, FolderOpen, Globe, Home, LogOut, NotebookPen, Search, Settings, UsersRound, type LucideIcon } from "lucide-react";
+import { BookOpen, FolderOpen, Globe, Home, LogOut, NotebookPen, Search, Settings, ShieldCheck, UsersRound, type LucideIcon } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 
@@ -13,13 +13,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useIsAdmin } from "@/hooks/use-is-admin";
 import { useSession } from "@/hooks/use-session";
 import { supabase } from "@/integrations/supabase/client";
 import { useStore } from "@/lib/local-store";
 import { searchAll } from "@/lib/search";
 import { cn } from "@/lib/utils";
 
-type NavItem = { label: string; to: "/dashboard" | "/cases/new" | "/notes" | "/community" | "/resources" | "/settings"; match: string; icon: LucideIcon };
+type NavItem = { label: string; to: "/dashboard" | "/cases/new" | "/notes" | "/community" | "/resources" | "/settings" | "/admin"; match: string; icon: LucideIcon; adminOnly?: boolean };
 
 const NAV: NavItem[] = [
   { label: "Home", to: "/dashboard", match: "/dashboard", icon: Home },
@@ -28,6 +29,7 @@ const NAV: NavItem[] = [
   { label: "Community", to: "/community", match: "/community", icon: UsersRound },
   { label: "Resources", to: "/resources", match: "/resources", icon: BookOpen },
   { label: "Settings", to: "/settings", match: "/settings", icon: Settings },
+  { label: "Admin", to: "/admin", match: "/admin", icon: ShieldCheck, adminOnly: true },
 ];
 
 const LANGS = ["EN", "FR", "DE", "IT"] as const;
