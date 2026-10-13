@@ -41,7 +41,7 @@ export function findMatch(query: string, text: string): [number, number] | null 
 }
 
 export type SymptomHit = { symptom: Symptom; field: "term" | "synonym" | "translation" | "code"; text: string; range: [number, number] };
-export type ArticleHit = { article: Article; field: "title" | "tag"; text: string; range: [number, number] };
+export type ArticleHit = { article: Article; field: "title" | "tag" | "summary"; text: string; range: [number, number] };
 export type PostHit = { post: Post; text: string; range: [number, number] };
 
 export function searchAll(query: string, opts: { language?: string | undefined; posts: Post[] }) {
@@ -68,6 +68,9 @@ export function searchAll(query: string, opts: { language?: string | undefined; 
       const tr = findMatch(query, tag);
       if (tr) { articles.push({ article: a, field: "tag", text: tag, range: tr }); break; }
     }
+    if (articles.at(-1)?.article === a) continue;
+    const sr = findMatch(query, a.summary);
+    if (sr) articles.push({ article: a, field: "summary", text: a.summary, range: sr });
   }
   const posts: PostHit[] = [];
   for (const p of opts.posts) {
