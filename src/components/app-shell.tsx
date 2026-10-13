@@ -165,7 +165,7 @@ function AvatarMenu() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const email = session?.user.email ?? "";
-  const name = (session?.user.user_metadata?.full_name as string | undefined) ?? email;
+  const name = (session?.user.user_metadata?.["full_name"] as string | undefined) ?? email;
   const initials = (name || "?").slice(0, 2).toUpperCase();
 
   return (
