@@ -20,3 +20,15 @@ describe("reports", () => {
     expect(moderationQueue([{ ...post, replies }]).map((q) => q.id)).toEqual(["c1"]);
   });
 });
+
+import { applyDecision } from "@/lib/reports";
+describe("AI decisions", () => {
+  const hidden = { ...post, hidden: true, reports: [r, r, r] };
+  const item = { kind: "post" as const, postId: "p1", id: "p1", text: "T", author: "A", reports: hidden.reports };
+  it("remove deletes the post", () => expect(applyDecision([hidden], item, "remove")).toHaveLength(0));
+  it("restore unhides the post and clears reports", () => {
+    const [p] = applyDecision([hidden], item, "restore");
+    expect(p?.hidden).toBe(false);
+    expect(p?.reports).toEqual([]);
+  });
+});

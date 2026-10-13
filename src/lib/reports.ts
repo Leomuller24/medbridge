@@ -41,3 +41,17 @@ export function moderationQueue(posts: Post[]): QueueItem[] {
   }
   return out;
 }
+
+export type ModLogEntry = { id: string; kind: "post" | "comment"; text: string; author: string; decision: "remove" | "restore"; reason: string; at: string };
+
+export function findQueueItem(posts: Post[], id: string): QueueItem | undefined {
+  return moderationQueue(posts).find((q) => q.id === id);
+}
+
+/** Apply an AI moderator decision to the posts list. */
+export function applyDecision(posts: Post[], item: QueueItem, decision: "remove" | "restore"): Post[] {
+  if (item.kind === "post") {
+    return decision === "remove" ? posts.filter((p) => p.id !== item.id) : posts.map((p) => (p.id === item.id ? { ...p, hidden: false, reports: [] } : p));
+  }
+  return posts.map((p) => (p.id !== item.postId ? p : { ...p, replies: decision === "remove" ? removeReply(p.replies, item.id) : setReplyHidden(p.replies, item.id, false) }));
+}
