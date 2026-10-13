@@ -4,7 +4,9 @@ import { useState } from "react";
 
 import { PageShell, formatDate } from "@/components/page-shell";
 import { Input } from "@/components/ui/input";
-import { useStore } from "@/lib/local-store";
+import { ReportButton } from "@/components/report-button";
+import { updateStore, useStore } from "@/lib/local-store";
+import { addReport } from "@/lib/reports";
 import { COMMUNITY_CATEGORIES } from "@/lib/medbridge-data";
 
 export const Route = createFileRoute("/_authenticated/community/")({
