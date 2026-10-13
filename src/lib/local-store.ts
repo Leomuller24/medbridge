@@ -4,9 +4,9 @@ import { type CaseRecord, type NoteRecord, type Post, SEED_CASES, SEED_NOTES, SE
 import type { Activity } from "./posting-rules";
 
 // Everything here lives only in the user's browser; nothing is sent to a server.
-type Store = { cases: CaseRecord[]; notes: NoteRecord[]; posts: Post[]; helpful: string[]; activity: Activity[] };
+type Store = { cases: CaseRecord[]; notes: NoteRecord[]; posts: Post[]; helpful: string[]; activity: Activity[]; reported: string[] };
 const KEY = "medbridge-local-v1";
-const seed: Store = { cases: SEED_CASES, notes: SEED_NOTES, posts: SEED_POSTS, helpful: [], activity: [] };
+const seed: Store = { cases: SEED_CASES, notes: SEED_NOTES, posts: SEED_POSTS, helpful: [], activity: [], reported: [] };
 
 let cache: Store | null = null;
 const listeners = new Set<() => void>();

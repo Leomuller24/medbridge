@@ -4,7 +4,9 @@ import { useState } from "react";
 
 import { PageShell, formatDate } from "@/components/page-shell";
 import { Input } from "@/components/ui/input";
-import { useStore } from "@/lib/local-store";
+import { ReportButton } from "@/components/report-button";
+import { updateStore, useStore } from "@/lib/local-store";
+import { addReport } from "@/lib/reports";
 import { COMMUNITY_CATEGORIES } from "@/lib/medbridge-data";
 
 export const Route = createFileRoute("/_authenticated/community/")({
@@ -39,7 +41,7 @@ function CommunityPage() {
   const [cat, setCat] = useState("All");
   const [q, setQ] = useState("");
   const query = q.trim().toLowerCase();
-  const list = posts.filter((p) => (cat === "All" || p.category === cat) && (!query || `${p.title} ${p.body}`.toLowerCase().includes(query)));
+  const list = posts.filter((p) => !p.hidden && (cat === "All" || p.category === cat) && (!query || `${p.title} ${p.body}`.toLowerCase().includes(query)));
 
   return (
     <PageShell eyebrow="Community" title="Learn from colleagues">
@@ -108,6 +110,7 @@ function CommunityPage() {
                         <Link key={c.id} to="/cases/$caseId" params={{ caseId: c.id }} className="ml-1 font-medium text-primary hover:underline">{c.code}</Link>
                       ))}</span>
                     )}
+                    <span className="ml-auto"><ReportButton targetId={p.id} label="post" onReport={(r) => updateStore((s) => ({ ...s, posts: s.posts.map((x) => (x.id === p.id ? addReport(x, r) : x)) }))} /></span>
                   </div>
                 </article>
               );
@@ -130,6 +133,7 @@ function CommunityPage() {
           <section className="card bg-secondary/60">
             <p className="flex items-center gap-2 text-sm font-semibold text-navy"><Users aria-hidden="true" className="size-4 text-primary" /> Privacy reminder</p>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">Posts stay in your own browser in this version. MedBridge does not store patient data.</p>
+            <Link to="/moderation" className="mt-3 inline-block text-sm font-medium text-primary hover:underline">Moderation queue</Link>
           </section>
         </aside>
       </div>

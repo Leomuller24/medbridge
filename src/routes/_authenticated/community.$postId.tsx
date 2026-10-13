@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { newId, updateStore, useStore } from "@/lib/local-store";
 import { checkPosting } from "@/lib/posting-rules";
+import { addReport, reportReply } from "@/lib/reports";
+import { ReportButton } from "@/components/report-button";
 import type { Reply } from "@/lib/medbridge-data";
 
 export const Route = createFileRoute("/_authenticated/community/$postId")({
@@ -39,7 +41,7 @@ function Thread() {
   const [replyTo, setReplyTo] = useState<string | null>(null);
 
   const back = <Link to="/community" className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"><ArrowLeft className="size-4" /> Back to feed</Link>;
-  if (!post) return <PageShell title="Post not found">{back}</PageShell>;
+  if (!post || post.hidden) return <PageShell title="Post not found">{back}</PageShell>;
   const marked = helpful.includes(post.id);
 
   function toggleHelpful() {
@@ -64,11 +66,11 @@ function Thread() {
 
   const renderReplies = (list: Reply[], depth = 0) => (
     <ul className={depth ? "mt-3 space-y-3 border-l border-border pl-5" : "space-y-4"}>
-      {list.map((r) => (
+      {list.filter((r) => !r.hidden).map((r) => (
         <li key={r.id}>
           <p className="text-xs text-muted-foreground">{r.author} · {formatDate(r.createdAt)}</p>
           <p className="mt-1 text-sm text-foreground">{r.text}</p>
-          <Button variant="link" className="h-auto p-0 text-xs" onClick={() => setReplyTo(r.id)}>Reply</Button>
+          <div className="flex items-center gap-3"><Button variant="link" className="h-auto p-0 text-xs" onClick={() => setReplyTo(r.id)}>Reply</Button><ReportButton targetId={r.id} label="comment" onReport={(rep) => updateStore((s) => ({ ...s, posts: s.posts.map((p) => (p.id === postId ? { ...p, replies: reportReply(p.replies, r.id, rep) } : p)) }))} /></div>
           {r.replies?.length ? renderReplies(r.replies, depth + 1) : null}
         </li>
       ))}
@@ -84,6 +86,7 @@ function Thread() {
         <Button variant={marked ? "default" : "outline"} className="mt-5" aria-pressed={marked} onClick={toggleHelpful}>
           <ThumbsUp aria-hidden="true" /> Helpful · {post.helpful}
         </Button>
+        <span className="ml-3"><ReportButton targetId={post.id} label="post" onReport={(rep) => updateStore((s) => ({ ...s, posts: s.posts.map((p) => (p.id === postId ? addReport(p, rep) : p)) }))} /></span>
       </article>
 
       <section className={`${cardClass} mt-6`}>
