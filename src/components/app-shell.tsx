@@ -74,8 +74,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="pb-20 md:pb-0">{children}</div>
       </div>
 
-      <nav aria-label="Mobile navigation" className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-6 border-t border-border bg-card/95 backdrop-blur md:hidden">
-        {NAV.map((item) => {
+      <nav aria-label="Mobile navigation" className="fixed inset-x-0 bottom-0 z-40 grid border-t border-border bg-card/95 backdrop-blur md:hidden" style={{ gridTemplateColumns: `repeat(${nav.length}, minmax(0, 1fr))` }}>
+        {nav.map((item) => {
           const active = isActive(item);
           return (
             <Link key={item.label} to={item.to} aria-current={active ? "page" : undefined}
