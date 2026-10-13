@@ -20,11 +20,13 @@ export const Route = createFileRoute("/_authenticated/cases/new")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
+  validateSearch: (s: Record<string, unknown>): { symptom?: string } => (typeof s.symptom === "string" ? { symptom: s.symptom } : {}),
   component: NewCase,
 });
 
 function NewCase() {
   const navigate = useNavigate();
+  const { symptom } = Route.useSearch();
   const [code, setCode] = useState(`CASE-${Math.random().toString(36).slice(2, 5).toUpperCase()}`);
   const [language, setLanguage] = useState("");
 
@@ -32,12 +34,13 @@ function NewCase() {
     e.preventDefault();
     if (!language || !code.trim()) return;
     const id = newId();
-    updateStore((s) => ({ ...s, cases: [{ id, code: code.trim().slice(0, 40), language, date: new Date().toISOString().slice(0, 10), symptoms: [], redFlags: [] }, ...s.cases] }));
+    updateStore((s) => ({ ...s, cases: [{ id, code: code.trim().slice(0, 40), language, date: new Date().toISOString().slice(0, 10), symptoms: symptom ? [symptom] : [], redFlags: [] }, ...s.cases] }));
     navigate({ to: "/cases/$caseId", params: { caseId: id } });
   }
 
   return (
     <PageShell eyebrow="Symptom Translation" title="New case">
+      {symptom && <p className="mb-4 text-sm text-muted-foreground">Choose the patient's language to open the briefing for <strong className="text-foreground">{symptom}</strong>.</p>}
       <form onSubmit={submit} className={`${cardClass} max-w-xl space-y-6 p-8`}>
         <div className="space-y-2">
           <Label htmlFor="code">Case code</Label>

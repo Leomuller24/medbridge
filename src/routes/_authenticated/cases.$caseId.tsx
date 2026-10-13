@@ -1,14 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Check, ChevronsUpDown, Printer, Save, ShieldAlert, X } from "lucide-react";
+import { ChevronDown, Printer, Save, ShieldAlert, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { PageShell, cardClass, formatDate } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { GlobalSearch } from "@/components/global-search";
 import { newId, updateStore, useStore } from "@/lib/local-store";
-import { SNOMED_SYMPTOMS, SYMPTOM_CATEGORIES, getBriefing } from "@/lib/medbridge-data";
+import { getBriefing } from "@/lib/medbridge-data";
 
 export const Route = createFileRoute("/_authenticated/cases/$caseId")({
   head: () => ({
@@ -28,7 +27,7 @@ function CasePage() {
   const { caseId } = Route.useParams();
   const { cases } = useStore();
   const record = cases.find((c) => c.id === caseId);
-  const [open, setOpen] = useState(false);
+  const [expanded, setExpanded] = useState<string | null>(null);
 
   if (!record) {
     return (
@@ -42,6 +41,11 @@ function CasePage() {
     updateStore((s) => ({ ...s, cases: s.cases.map((c) => (c.id === caseId ? { ...c, symptoms } : c)) }));
   const toggle = (sym: string) => setSymptoms(record.symptoms.includes(sym) ? record.symptoms.filter((x) => x !== sym) : [...record.symptoms, sym]);
   const briefings = record.symptoms.map((s) => getBriefing(s, record.language));
+  const select = (sym: string) => {
+    if (!record.symptoms.includes(sym)) setSymptoms([...record.symptoms, sym]);
+    setExpanded(sym);
+    setTimeout(() => document.getElementById(`briefing-${sym}`)?.scrollIntoView({ behavior: "smooth", block: "center" }), 50);
+  };
 
   function saveToNotes() {
     const text = briefings
@@ -53,6 +57,7 @@ function CasePage() {
 
   return (
     <PageShell
+      top={<GlobalSearch language={record.language} selected={record.symptoms} onSelectSymptom={select} />}
       eyebrow={`${record.code} · ${record.language} · ${formatDate(record.date)}`}
       title="Briefing card"
       actions={
@@ -68,33 +73,7 @@ function CasePage() {
       </div>
 
       <div className="mt-6 print:hidden">
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
-            <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between sm:w-96">
-              {record.symptoms.length ? `${record.symptoms.length} symptom(s) selected` : "Search and choose symptoms"}
-              <ChevronsUpDown aria-hidden="true" className="opacity-50" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-80 p-0" align="start">
-            <Command>
-              <CommandInput placeholder="Search symptoms…" />
-              <CommandList>
-                <CommandEmpty>No symptom found.</CommandEmpty>
-                {SYMPTOM_CATEGORIES.map((cat) => (
-                  <CommandGroup key={cat} heading={cat}>
-                    {SNOMED_SYMPTOMS.filter((s) => s.category === cat).map((s) => (
-                      <CommandItem key={s.code} value={`${s.term} ${s.code}`} onSelect={() => toggle(s.term)}>
-                        <Check aria-hidden="true" className={record.symptoms.includes(s.term) ? "opacity-100" : "opacity-0"} />
-                        <span className="flex-1">{s.term}</span>
-                        <span className="text-xs text-muted-foreground">{s.code}</span>
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                ))}
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
+        <p className="text-sm text-muted-foreground">Use the search bar above to add symptoms. You can add several to this case.</p>
         <div className="mt-3 flex flex-wrap gap-2">
           {record.symptoms.map((s) => (
             <span key={s} className="inline-flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-sm text-secondary-foreground">
@@ -110,14 +89,17 @@ function CasePage() {
       ) : (
         <div className="mt-8 space-y-6">
           {briefings.map((b) => (
-            <article key={b.symptom} className={cardClass}>
-              <h2 className="text-xl font-semibold text-card-foreground">{b.symptom}</h2>
-              <div className="mt-5 grid gap-6 md:grid-cols-2">
+            <article key={b.symptom} id={`briefing-${b.symptom}`} className={`${cardClass} scroll-mt-48`}>
+              <button type="button" aria-expanded={expanded === b.symptom} onClick={() => setExpanded(expanded === b.symptom ? null : b.symptom)} className="flex w-full items-center justify-between text-left">
+                <h2 className="text-xl font-semibold text-card-foreground">{b.symptom}</h2>
+                <ChevronDown aria-hidden="true" className={`size-5 text-muted-foreground transition-transform ${expanded === b.symptom ? "rotate-180" : ""}`} />
+              </button>
+              {expanded === b.symptom && <div className="mt-5 grid gap-6 md:grid-cols-2">
                 <Section title="How the patient may describe it" items={b.patientDescription} />
                 <Section title="Cultural and communication context" items={b.culturalContext} />
                 <Section title="Family Perspective" items={b.familyPerspective} />
                 <Section title="Questions worth asking" items={b.questions} />
-              </div>
+              </div>}
             </article>
           ))}
           <p className="text-xs text-muted-foreground">Printed summaries are created in your browser only. MedBridge does not store patient data.</p>
