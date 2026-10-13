@@ -55,3 +55,19 @@ export function applyDecision(posts: Post[], item: QueueItem, decision: "remove"
   }
   return posts.map((p) => (p.id !== item.postId ? p : { ...p, replies: decision === "remove" ? removeReply(p.replies, item.id) : setReplyHidden(p.replies, item.id, false) }));
 }
+
+/** Every post or comment with at least one report, hidden or not. */
+export function reportedItems(posts: Post[]): QueueItem[] {
+  const out: QueueItem[] = [];
+  const walk = (postId: string, list: Reply[]) => list.forEach((r) => {
+    if (r.reports?.length) out.push({ kind: "comment", postId, id: r.id, text: r.text, author: r.author, reports: r.reports });
+    walk(postId, r.replies ?? []);
+  });
+  for (const p of posts) {
+    if (p.reports?.length) out.push({ kind: "post", postId: p.id, id: p.id, text: p.title, author: p.author, reports: p.reports });
+    walk(p.id, p.replies);
+  }
+  return out;
+}
+
+export type Warning = { author: string; itemId: string; at: string };
