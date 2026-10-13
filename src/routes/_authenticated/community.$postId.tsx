@@ -9,6 +9,7 @@ import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { newId, updateStore, useStore } from "@/lib/local-store";
+import { findPii, piiWarning } from "@/lib/pii";
 import { checkPosting } from "@/lib/posting-rules";
 import { addReport, reportReply } from "@/lib/reports";
 import { ReportButton } from "@/components/report-button";
@@ -55,6 +56,8 @@ function Thread() {
   async function submit() {
     const t = text.trim().slice(0, 2000);
     if (!t) return;
+    const hits = findPii(t);
+    if (hits.length) return void toast.warning(piiWarning(hits));
     const { data } = await supabase.auth.getUser();
     const blocked = checkPosting(data.user, "comment", t, activity);
     if (blocked) return void toast.error(blocked);
@@ -82,7 +85,9 @@ function Thread() {
       {back}
       <article className={`${cardClass} mt-6`}>
         <p className="text-xs text-muted-foreground">{post.author} · {formatDate(post.createdAt)}</p>
+        <p className="mt-3 inline-block rounded-full bg-accent px-3 py-1 text-xs font-medium text-primary">Shared experience, not medical advice</p>
         <p className="mt-3 whitespace-pre-wrap leading-7 text-foreground">{post.body}</p>
+        {post.source && <p className="mt-3 text-sm text-muted-foreground">Source: <a href={post.source} target="_blank" rel="noopener noreferrer nofollow" className="break-all text-primary hover:underline">{post.source}</a></p>}
         <Button variant={marked ? "default" : "outline"} className="mt-5" aria-pressed={marked} onClick={toggleHelpful}>
           <ThumbsUp aria-hidden="true" /> Helpful · {post.helpful}
         </Button>

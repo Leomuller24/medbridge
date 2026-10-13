@@ -13,6 +13,7 @@ import {
 import { useEffect } from "react";
 
 import { GlobalSearch } from "@/components/global-search";
+import { InterpreterCard } from "@/components/interpreter-card";
 import { PageShell, cardClass, formatDate } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import { useProfile } from "@/hooks/use-profile";
@@ -175,6 +176,8 @@ function Dashboard() {
           <p className="mt-4 text-xs text-muted-foreground">Reminders to discuss with the care team — never a diagnosis.</p>
         </section>
       </div>
+
+      <div className="mt-6"><InterpreterCard /></div>
 
       {/* Community highlights + featured resources */}
       <div className="mt-6 grid gap-5 lg:grid-cols-2">

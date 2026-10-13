@@ -96,10 +96,12 @@ function CommunityPage() {
 
                   <Link to="/community/$postId" params={{ postId: p.id }} className="mt-3 block text-lg font-semibold text-navy hover:text-primary">{p.title}</Link>
                   <p className="mt-1.5 line-clamp-2 text-sm leading-6 text-muted-foreground">{p.body}</p>
+                  {p.source && <a href={p.source} target="_blank" rel="noopener noreferrer nofollow" className="mt-2 block truncate text-xs text-primary hover:underline">Source: {p.source}</a>}
 
                   <div className="mt-3 flex flex-wrap gap-2">
                     <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">{p.category}</span>
                     <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">{p.language}</span>
+                    <span className="rounded-full bg-accent px-3 py-1 text-xs font-medium text-primary">Shared experience, not medical advice</span>
                   </div>
 
                   <div className="mt-4 flex flex-wrap items-center gap-5 border-t border-border pt-4 text-sm text-muted-foreground">

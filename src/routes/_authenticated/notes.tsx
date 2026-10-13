@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { newId, updateStore, useStore } from "@/lib/local-store";
+import { findPii, piiWarning } from "@/lib/pii";
 import { checkPosting } from "@/lib/posting-rules";
 
 export const Route = createFileRoute("/_authenticated/notes")({
@@ -34,6 +35,7 @@ function NotesPage() {
   const [caseId, setCaseId] = useState(cases[0]?.id ?? "");
   const [text, setText] = useState("");
   const [shared, setShared] = useState(false);
+  const [source, setSource] = useState("");
   const [flag, setFlag] = useState("");
   const [day, setDay] = useState<Date | undefined>();
   const current = cases.find((c) => c.id === caseId);
@@ -44,8 +46,13 @@ function NotesPage() {
   function addNote() {
     const t = text.trim().slice(0, 5000);
     if (!t || !caseId) return;
-    updateStore((s) => ({ ...s, notes: [{ id: newId(), caseId, text: t, visibility: shared ? "shared" : "private", createdAt: new Date().toISOString() }, ...s.notes] }));
+    const hits = findPii(t);
+    if (hits.length) return void toast.warning(piiWarning(hits));
+    const src = source.trim().slice(0, 300);
+    if (src && !/^https?:\/\/\S+$/i.test(src)) return void toast.error("Source link must start with http:// or https://");
+    updateStore((s) => ({ ...s, notes: [{ id: newId(), caseId, text: t, visibility: shared ? "shared" : "private", createdAt: new Date().toISOString(), ...(src ? { source: src } : {}) }, ...s.notes] }));
     setText("");
+    setSource("");
     toast.success("Note added");
   }
 
@@ -60,12 +67,14 @@ function NotesPage() {
     const note = notes.find((n) => n.id === noteId);
     if (!note || note.visibility !== "shared" || !current) return;
     const { data } = await supabase.auth.getUser();
-    const blocked = checkPosting(data.user, "post", note.text, activity);
+    const hits = findPii(note.text);
+    if (hits.length) return void toast.warning(piiWarning(hits));
+    const blocked = checkPosting(data.user, "post", `${note.text} ${note.source ?? ""}`, activity);
     if (blocked) return void toast.error(blocked);
     updateStore((s) => ({
       ...s,
       activity: [...s.activity, { type: "post", at: new Date().toISOString() }],
-      posts: [{ id: newId(), category: "Communication", title: (note.text.split("\n")[0] ?? "").slice(0, 80), body: note.text, author: "You", createdAt: new Date().toISOString(), helpful: 0, language: current.language, replies: [] }, ...s.posts],
+      posts: [{ id: newId(), category: "Communication", title: (note.text.split("\n")[0] ?? "").slice(0, 80), body: note.text, author: "You", createdAt: new Date().toISOString(), helpful: 0, language: current.language, replies: [], ...(note.source ? { source: note.source } : {}) }, ...s.posts],
     }));
     toast.success("Shared to Community");
   }
@@ -108,6 +117,7 @@ function NotesPage() {
             <section className={cardClass}>
               <h2 className="font-semibold text-card-foreground">New note</h2>
               <Textarea className="mt-3 min-h-32" maxLength={5000} value={text} placeholder="Write about communication, not identifying patient details." onChange={(e) => setText(e.target.value)} />
+              <Input className="mt-3" type="url" maxLength={300} value={source} placeholder="Source link (optional), e.g. https://…" aria-label="Source link (optional)" onChange={(e) => setSource(e.target.value)} />
               <div className="mt-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Switch id="shared" checked={shared} onCheckedChange={setShared} />
