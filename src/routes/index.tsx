@@ -3,7 +3,6 @@ import {
   AlertTriangle, ArrowRight, BookOpen, Check, Globe, HeartHandshake, HelpCircle, Languages, LogIn,
   MessageCircleMore, NotebookPen, Rocket, Search, ShieldCheck, Sparkles, Stethoscope, UsersRound,
 } from "lucide-react";
-import { useState } from "react";
 import { toast } from "sonner";
 
 import { Logo } from "@/components/logo";
