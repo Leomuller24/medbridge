@@ -134,6 +134,6 @@ function RootComponent() {
 
 function ConditionalHeader() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  // The welcome page renders its own glass header.
-  return pathname === "/" ? null : <MedBridgeHeader />;
+  // Welcome page has its own glass header; signed-in pages use the app shell.
+  return pathname === "/login" || pathname === "/register" ? <MedBridgeHeader /> : null;
 }
