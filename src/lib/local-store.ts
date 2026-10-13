@@ -1,11 +1,12 @@
 import { useCallback, useSyncExternalStore } from "react";
 
 import { type CaseRecord, type NoteRecord, type Post, SEED_CASES, SEED_NOTES, SEED_POSTS } from "./medbridge-data";
+import type { Activity } from "./posting-rules";
 
 // Everything here lives only in the user's browser; nothing is sent to a server.
-type Store = { cases: CaseRecord[]; notes: NoteRecord[]; posts: Post[]; helpful: string[] };
+type Store = { cases: CaseRecord[]; notes: NoteRecord[]; posts: Post[]; helpful: string[]; activity: Activity[] };
 const KEY = "medbridge-local-v1";
-const seed: Store = { cases: SEED_CASES, notes: SEED_NOTES, posts: SEED_POSTS, helpful: [] };
+const seed: Store = { cases: SEED_CASES, notes: SEED_NOTES, posts: SEED_POSTS, helpful: [], activity: [] };
 
 let cache: Store | null = null;
 const listeners = new Set<() => void>();

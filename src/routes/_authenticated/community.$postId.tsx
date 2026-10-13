@@ -5,7 +5,11 @@ import { useState } from "react";
 import { PageShell, cardClass, formatDate } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+
+import { supabase } from "@/integrations/supabase/client";
 import { newId, updateStore, useStore } from "@/lib/local-store";
+import { checkPosting } from "@/lib/posting-rules";
 import type { Reply } from "@/lib/medbridge-data";
 
 export const Route = createFileRoute("/_authenticated/community/$postId")({
@@ -29,7 +33,7 @@ function addReply(list: Reply[], parentId: string | null, reply: Reply): Reply[]
 
 function Thread() {
   const { postId } = Route.useParams();
-  const { posts, helpful } = useStore();
+  const { posts, helpful, activity } = useStore();
   const post = posts.find((p) => p.id === postId);
   const [text, setText] = useState("");
   const [replyTo, setReplyTo] = useState<string | null>(null);
@@ -46,11 +50,14 @@ function Thread() {
     }));
   }
 
-  function submit() {
+  async function submit() {
     const t = text.trim().slice(0, 2000);
     if (!t) return;
+    const { data } = await supabase.auth.getUser();
+    const blocked = checkPosting(data.user, "comment", t, activity);
+    if (blocked) return void toast.error(blocked);
     const reply: Reply = { id: newId(), author: "You", text: t, createdAt: new Date().toISOString() };
-    updateStore((s) => ({ ...s, posts: s.posts.map((p) => (p.id === postId ? { ...p, replies: addReply(p.replies, replyTo, reply) } : p)) }));
+    updateStore((s) => ({ ...s, activity: [...s.activity, { type: "comment", at: reply.createdAt }], posts: s.posts.map((p) => (p.id === postId ? { ...p, replies: addReply(p.replies, replyTo, reply) } : p)) }));
     setText("");
     setReplyTo(null);
   }

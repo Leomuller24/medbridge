@@ -30,10 +30,15 @@ export function AuthForm({ mode }: AuthFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [challenge, setChallenge] = useState<{ a: number; b: number; start: number } | null>(null);
 
   useEffect(() => {
     if (session) navigate({ to: "/dashboard", replace: true });
   }, [session, navigate]);
+
+  useEffect(() => {
+    setChallenge({ a: 2 + Math.floor(Math.random() * 7), b: 1 + Math.floor(Math.random() * 8), start: Date.now() });
+  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -44,6 +49,14 @@ export function AuthForm({ mode }: AuthFormProps) {
     if (!parsed.success) {
       setError(parsed.error.issues[0]?.message ?? "Please check your details.");
       return;
+    }
+    if (isRegister) {
+      const tooFast = !challenge || Date.now() - challenge.start < 3000;
+      const wrong = !challenge || Number(form["human"]) !== challenge.a + challenge.b;
+      if (form["website"] || tooFast || wrong) {
+        setError("We couldn't confirm you're a person. Please answer the check question and try again.");
+        return;
+      }
     }
     setBusy(true);
     try {
@@ -113,6 +126,18 @@ export function AuthForm({ mode }: AuthFormProps) {
               placeholder="At least 8 characters"
               maxLength={128}
             />
+            {isRegister && (
+              <>
+                <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+                  <label htmlFor="register-website">Website</label>
+                  <input id="register-website" name="website" type="text" tabIndex={-1} autoComplete="off" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="register-human">Quick check: what is {challenge ? `${challenge.a} + ${challenge.b}` : "…"}?</Label>
+                  <Input id="register-human" name="human" inputMode="numeric" required maxLength={3} className="h-11" placeholder="Your answer" />
+                </div>
+              </>
+            )}
             <Button type="submit" size="lg" className="w-full" disabled={busy}>
               {busy ? "Please wait…" : isRegister ? "Register" : "Log in"}
             </Button>
