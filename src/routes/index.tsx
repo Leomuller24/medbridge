@@ -264,13 +264,11 @@ function Impact() {
   const stats = [
     { n: LANGUAGES.length, s: "", label: "Patient languages supported", icon: Languages },
     { n: SNOMED_SYMPTOMS.length, s: "", label: "SNOMED symptoms covered", icon: Stethoscope },
-    { n: 26, s: "", label: "Cantons", icon: Globe },
-    { n: 1200, s: "+", label: "Community members (example)", icon: UsersRound },
   ];
   return (
     <section id="community" className="relative isolate scroll-mt-20 overflow-hidden bg-hero py-20 text-primary-foreground">
       <FloatingShapes />
-      <div className="relative mx-auto grid max-w-7xl gap-6 px-5 sm:grid-cols-2 sm:px-8 lg:grid-cols-4 lg:px-10">
+      <div className="relative mx-auto grid max-w-4xl gap-6 px-5 sm:grid-cols-2 sm:px-8 lg:px-10">
         {stats.map(({ n, s, label, icon: Icon }, i) => (
           <Reveal key={label} delay={i * 80} className="glass-dark rounded-[20px] border border-primary-foreground/15 p-7">
             <span className={`${iconWrap} bg-aqua/20 text-aqua`}><Icon aria-hidden="true" className="size-5" /></span>
