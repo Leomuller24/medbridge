@@ -1,8 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Menu, ShieldPlus, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
+import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/hooks/use-session";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,10 +25,7 @@ export function MedBridgeHeader() {
     <header className="border-b border-border/80 bg-background/95 backdrop-blur">
       <div className="mx-auto grid h-18 max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 sm:px-8 lg:px-10">
         <Link to="/" className="flex min-w-0 items-center gap-3" onClick={() => setIsOpen(false)}>
-          <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground shadow-sm">
-            <ShieldPlus aria-hidden="true" className="size-5" />
-          </span>
-          <span className="truncate text-xl font-semibold text-foreground">MedBridge</span>
+<Logo />
         </Link>
 
         <nav aria-label="Primary navigation" className="hidden items-center gap-1 md:flex">

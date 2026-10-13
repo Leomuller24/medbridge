@@ -7,6 +7,7 @@
 - [x] Add mock registration page with email and password fields plus signup guide
 - [x] Use exact privacy note: “MedBridge does not store patient data.”
 - [x] Phase 1: search bar on Home and case pages (grouped results, typos, highlight, filters, 9 example articles)
-- [ ] Phase 2: visual redesign (waits for user to confirm Phase 1)
+- [x] Phase 2a: welcome page redesign
+- [ ] Phase 2b: app shell, dashboard, case, community, notes, settings (waits for user confirmation)
 - [ ] Phase 3: community safeguards
 - [ ] Phase 4: database security review
