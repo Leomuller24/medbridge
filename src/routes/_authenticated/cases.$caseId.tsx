@@ -160,7 +160,7 @@ function CasePage() {
             ))}
           </div>
           <div role="tabpanel" className="pt-5">
-            <BriefingList items={[current.patientDescription, current.culturalContext, current.familyPerspective, current.questions][tab]} />
+            <BriefingList items={[current.patientDescription, current.culturalContext, current.familyPerspective, current.questions][tab] ?? []} />
           </div>
         </section>
       )}
