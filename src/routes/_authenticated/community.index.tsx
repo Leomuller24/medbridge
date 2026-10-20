@@ -8,6 +8,7 @@ import { ReportButton } from "@/components/report-button";
 import { updateStore, useStore } from "@/lib/local-store";
 import { addReport } from "@/lib/reports";
 import { COMMUNITY_CATEGORIES } from "@/lib/medbridge-data";
+import { countReplies, isUnanswered, pointsByAuthor } from "@/lib/reputation";
 
 export const Route = createFileRoute("/_authenticated/community/")({
   head: () => ({
@@ -23,7 +24,6 @@ export const Route = createFileRoute("/_authenticated/community/")({
   component: CommunityPage,
 });
 
-const countReplies = (r: { replies?: unknown[] }[]): number => r.reduce((n, x) => n + 1 + countReplies((x.replies as never) ?? []), 0);
 
 const ROLES = ["Doctor", "Nurse", "Interpreter", "Midwife"] as const;
 const roleFor = (author: string) => ROLES[author.length % ROLES.length];
@@ -41,7 +41,9 @@ function CommunityPage() {
   const [cat, setCat] = useState("All");
   const [q, setQ] = useState("");
   const query = q.trim().toLowerCase();
-  const list = posts.filter((p) => !p.hidden && (cat === "All" || p.category === cat) && (!query || `${p.title} ${p.body}`.toLowerCase().includes(query)));
+  const points = pointsByAuthor(posts);
+  const unanswered = posts.filter((p) => !p.hidden && isUnanswered(p));
+  const list = posts.filter((p) => !p.hidden && (cat === "All" || (cat === "Unanswered" ? isUnanswered(p) : p.category === cat)) && (!query || `${p.title} ${p.body}`.toLowerCase().includes(query)));
 
   return (
     <PageShell eyebrow="Community" title="Learn from colleagues">
@@ -54,10 +56,22 @@ function CommunityPage() {
             <p className="relative mt-2 text-sm leading-6 text-navy">Share what helped you communicate. Never include names or identifying patient details. To post, mark a note as Shared in Notes and select Share to Community.</p>
           </section>
 
+          {unanswered.length > 0 && (
+            <section className="card mt-6">
+              <h2 className="flex items-center gap-2 text-base font-semibold text-navy"><MessageSquare aria-hidden="true" className="size-4 text-primary" /> Needs an answer</h2>
+              <p className="mt-1 text-sm text-muted-foreground">The first answer marked helpful earns 2 bonus points.</p>
+              <ul className="mt-3 divide-y divide-border">
+                {unanswered.map((p) => (
+                  <li key={p.id} className="py-2.5"><Link to="/community/$postId" params={{ postId: p.id }} className="text-sm font-medium text-navy hover:text-primary">{p.title}</Link> <span className="text-xs text-muted-foreground">· {p.category}</span></li>
+                ))}
+              </ul>
+            </section>
+          )}
+
           {/* Tabs + search */}
           <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
             <div role="tablist" aria-label="Categories" className="flex flex-wrap gap-2">
-              {COMMUNITY_CATEGORIES.map((c) => (
+              {[...COMMUNITY_CATEGORIES, "Unanswered"].map((c) => (
                 <button
                   key={c}
                   role="tab"
@@ -89,6 +103,7 @@ function CommunityPage() {
                       <p className="flex flex-wrap items-center gap-2 text-sm font-semibold text-navy">
                         {p.author}
                         <span className="rounded-full bg-accent px-2.5 py-0.5 text-xs font-medium text-primary">{role}</span>
+                        <span className="text-xs font-medium text-primary">{points[p.author] ?? 0} pts</span>
                       </p>
                       <p className="text-xs text-muted-foreground">{formatDate(p.createdAt)}</p>
                     </div>
