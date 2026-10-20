@@ -5,7 +5,7 @@ export const DAILY_POST_LIMIT = 3;
 export const DAILY_COMMENT_LIMIT = 10;
 const DAY = 24 * 60 * 60 * 1000;
 
-export type Activity = { type: "post" | "comment"; at: string };
+export type Activity = { type: "post" | "comment" | "vote"; at: string };
 
 type UserLike = Pick<User, "created_at" | "app_metadata"> & { email_confirmed_at?: string | null | undefined };
 
