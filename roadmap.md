@@ -7,3 +7,7 @@
 - [x] Database security review: RLS on every table, no names/birth dates/addresses, list tables + policies
 - [x] "Need an interpreter now?" card on dashboard and case page
 - [x] Handover card per case (code, language, interpreter needed, communication prefs, agreed-to-share notes) with Print + offline QR
+- [x] Helpful votes on posts, answers and comments; points per author (not own content, none for reported)
+- [x] Weekly contribution streak with flame on profile (one skipped week per month)
+- [x] "Needs an answer" section + Unanswered filter; +2 bonus for first helpful answer
+- [x] Anti-cheat: ignore votes from accounts <7 days, 10 votes/day, no ranking, Newcomer/Helper/Trusted levels
