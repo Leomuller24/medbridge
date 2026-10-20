@@ -131,7 +131,7 @@ export type NoteRecord = {
   source?: string | undefined;
 };
 
-export type Reply = { id: string; author: string; text: string; createdAt: string; replies?: Reply[]; reports?: Report[] | undefined; hidden?: boolean | undefined };
+export type Reply = { id: string; author: string; text: string; createdAt: string; replies?: Reply[]; reports?: Report[] | undefined; hidden?: boolean | undefined; helpful?: number | undefined };
 
 export type Post = {
   id: string;
@@ -146,6 +146,8 @@ export type Post = {
   source?: string | undefined;
   reports?: Report[] | undefined;
   hidden?: boolean | undefined;
+  /** First answer that received a helpful vote; earns a bonus. */
+  bonusReplyId?: string | undefined;
 };
 
 export const COMMUNITY_CATEGORIES = ["All", "Communication", "Cultural context", "Interpreting", "Family care"];

@@ -14,6 +14,8 @@ import { checkPosting } from "@/lib/posting-rules";
 import { addReport, reportReply } from "@/lib/reports";
 import { ReportButton } from "@/components/report-button";
 import type { Reply } from "@/lib/medbridge-data";
+import { pointsByAuthor } from "@/lib/reputation";
+import { toggleHelpful } from "@/lib/votes";
 
 export const Route = createFileRoute("/_authenticated/community/$postId")({
   head: () => ({
@@ -45,13 +47,8 @@ function Thread() {
   if (!post || post.hidden) return <PageShell title="Post not found">{back}</PageShell>;
   const marked = helpful.includes(post.id);
 
-  function toggleHelpful() {
-    updateStore((s) => ({
-      ...s,
-      helpful: marked ? s.helpful.filter((h) => h !== postId) : [...s.helpful, postId],
-      posts: s.posts.map((p) => (p.id === postId ? { ...p, helpful: p.helpful + (marked ? -1 : 1) } : p)),
-    }));
-  }
+  const points = pointsByAuthor(posts);
+  const by = (a: string) => <>{a} · <span className="font-medium text-primary">{points[a] ?? 0} pts</span></>;
 
   async function submit() {
     const t = text.trim().slice(0, 2000);
@@ -71,9 +68,9 @@ function Thread() {
     <ul className={depth ? "mt-3 space-y-3 border-l border-border pl-5" : "space-y-4"}>
       {list.filter((r) => !r.hidden).map((r) => (
         <li key={r.id}>
-          <p className="text-xs text-muted-foreground">{r.author} · {formatDate(r.createdAt)}</p>
+          <p className="text-xs text-muted-foreground">{by(r.author)} · {formatDate(r.createdAt)}{r.id === post.bonusReplyId && <span className="ml-2 rounded-full bg-accent px-2 py-0.5 font-medium text-primary">First helpful answer +2</span>}</p>
           <p className="mt-1 text-sm text-foreground">{r.text}</p>
-          <div className="flex items-center gap-3"><Button variant="link" className="h-auto p-0 text-xs" onClick={() => setReplyTo(r.id)}>Reply</Button><ReportButton targetId={r.id} label="comment" onReport={(rep) => updateStore((s) => ({ ...s, posts: s.posts.map((p) => (p.id === postId ? { ...p, replies: reportReply(p.replies, r.id, rep) } : p)) }))} /></div>
+          <div className="flex items-center gap-3"><button type="button" aria-pressed={helpful.includes(r.id)} onClick={() => toggleHelpful(postId, r.author, r.id)} className={`inline-flex items-center gap-1 text-xs font-medium ${helpful.includes(r.id) ? "text-primary" : "text-muted-foreground hover:text-primary"}`}><ThumbsUp aria-hidden="true" className="size-3.5" /> Helpful · {r.helpful ?? 0}</button><Button variant="link" className="h-auto p-0 text-xs" onClick={() => setReplyTo(r.id)}>Reply</Button><ReportButton targetId={r.id} label="comment" onReport={(rep) => updateStore((s) => ({ ...s, posts: s.posts.map((p) => (p.id === postId ? { ...p, replies: reportReply(p.replies, r.id, rep) } : p)) }))} /></div>
           {r.replies?.length ? renderReplies(r.replies, depth + 1) : null}
         </li>
       ))}
@@ -84,11 +81,11 @@ function Thread() {
     <PageShell eyebrow={post.category} title={post.title}>
       {back}
       <article className={`${cardClass} mt-6`}>
-        <p className="text-xs text-muted-foreground">{post.author} · {formatDate(post.createdAt)}</p>
+        <p className="text-xs text-muted-foreground">{by(post.author)} · {formatDate(post.createdAt)}</p>
         <p className="mt-3 inline-block rounded-full bg-accent px-3 py-1 text-xs font-medium text-primary">Shared experience, not medical advice</p>
         <p className="mt-3 whitespace-pre-wrap leading-7 text-foreground">{post.body}</p>
         {post.source && <p className="mt-3 text-sm text-muted-foreground">Source: <a href={post.source} target="_blank" rel="noopener noreferrer nofollow" className="break-all text-primary hover:underline">{post.source}</a></p>}
-        <Button variant={marked ? "default" : "outline"} className="mt-5" aria-pressed={marked} onClick={toggleHelpful}>
+        <Button variant={marked ? "default" : "outline"} className="mt-5" aria-pressed={marked} onClick={() => toggleHelpful(postId, post.author)}>
           <ThumbsUp aria-hidden="true" /> Helpful · {post.helpful}
         </Button>
         <span className="ml-3"><ReportButton targetId={post.id} label="post" onReport={(rep) => updateStore((s) => ({ ...s, posts: s.posts.map((p) => (p.id === postId ? addReport(p, rep) : p)) }))} /></span>
