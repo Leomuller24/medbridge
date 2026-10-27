@@ -28,6 +28,7 @@ import { Route as PatientExplainRouteImport } from './routes/patient.explain'
 import { Route as PatientHealthcareRouteImport } from './routes/patient.healthcare'
 import { Route as PatientPrepareRouteImport } from './routes/patient.prepare'
 import { Route as PatientRightsRouteImport } from './routes/patient.rights'
+import { Route as PatientTranslateRouteImport } from './routes/patient.translate'
 import { Route as AuthenticatedCasesCaseIdRouteImport } from './routes/_authenticated/cases.$caseId'
 import { Route as AuthenticatedCasesNewRouteImport } from './routes/_authenticated/cases.new'
 import { Route as AuthenticatedCommunityIndexRouteImport } from './routes/_authenticated/community.index'
@@ -127,6 +128,11 @@ const PatientRightsRoute = PatientRightsRouteImport.update({
   path: '/rights',
   getParentRoute: () => PatientRoute,
 } as any)
+const PatientTranslateRoute = PatientTranslateRouteImport.update({
+  id: '/translate',
+  path: '/translate',
+  getParentRoute: () => PatientRoute,
+} as any)
 const AuthenticatedCasesCaseIdRoute =
   AuthenticatedCasesCaseIdRouteImport.update({
     id: '/cases/$caseId',
@@ -169,6 +175,7 @@ export interface FileRoutesByFullPath {
   '/patient/healthcare': typeof PatientHealthcareRoute
   '/patient/prepare': typeof PatientPrepareRoute
   '/patient/rights': typeof PatientRightsRoute
+  '/patient/translate': typeof PatientTranslateRoute
   '/patient/': typeof PatientIndexRoute
   '/cases/$caseId': typeof AuthenticatedCasesCaseIdRoute
   '/cases/new': typeof AuthenticatedCasesNewRoute
@@ -192,6 +199,7 @@ export interface FileRoutesByTo {
   '/patient/healthcare': typeof PatientHealthcareRoute
   '/patient/prepare': typeof PatientPrepareRoute
   '/patient/rights': typeof PatientRightsRoute
+  '/patient/translate': typeof PatientTranslateRoute
   '/patient': typeof PatientIndexRoute
   '/cases/$caseId': typeof AuthenticatedCasesCaseIdRoute
   '/cases/new': typeof AuthenticatedCasesNewRoute
@@ -218,6 +226,7 @@ export interface FileRoutesById {
   '/patient/healthcare': typeof PatientHealthcareRoute
   '/patient/prepare': typeof PatientPrepareRoute
   '/patient/rights': typeof PatientRightsRoute
+  '/patient/translate': typeof PatientTranslateRoute
   '/patient/': typeof PatientIndexRoute
   '/_authenticated/cases/$caseId': typeof AuthenticatedCasesCaseIdRoute
   '/_authenticated/cases/new': typeof AuthenticatedCasesNewRoute
@@ -244,6 +253,7 @@ export interface FileRouteTypes {
     | '/patient/healthcare'
     | '/patient/prepare'
     | '/patient/rights'
+    | '/patient/translate'
     | '/patient/'
     | '/cases/$caseId'
     | '/cases/new'
@@ -267,6 +277,7 @@ export interface FileRouteTypes {
     | '/patient/healthcare'
     | '/patient/prepare'
     | '/patient/rights'
+    | '/patient/translate'
     | '/patient'
     | '/cases/$caseId'
     | '/cases/new'
@@ -292,6 +303,7 @@ export interface FileRouteTypes {
     | '/patient/healthcare'
     | '/patient/prepare'
     | '/patient/rights'
+    | '/patient/translate'
     | '/patient/'
     | '/_authenticated/cases/$caseId'
     | '/_authenticated/cases/new'
@@ -443,6 +455,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PatientRightsRouteImport
       parentRoute: typeof PatientRoute
     }
+    '/patient/translate': {
+      id: '/patient/translate'
+      path: '/translate'
+      fullPath: '/patient/translate'
+      preLoaderRoute: typeof PatientTranslateRouteImport
+      parentRoute: typeof PatientRoute
+    }
     '/_authenticated/cases/$caseId': {
       id: '/_authenticated/cases/$caseId'
       path: '/cases/$caseId'
@@ -511,6 +530,7 @@ interface PatientRouteChildren {
   PatientHealthcareRoute: typeof PatientHealthcareRoute
   PatientPrepareRoute: typeof PatientPrepareRoute
   PatientRightsRoute: typeof PatientRightsRoute
+  PatientTranslateRoute: typeof PatientTranslateRoute
   PatientIndexRoute: typeof PatientIndexRoute
 }
 
@@ -520,6 +540,7 @@ const PatientRouteChildren: PatientRouteChildren = {
   PatientHealthcareRoute: PatientHealthcareRoute,
   PatientPrepareRoute: PatientPrepareRoute,
   PatientRightsRoute: PatientRightsRoute,
+  PatientTranslateRoute: PatientTranslateRoute,
   PatientIndexRoute: PatientIndexRoute,
 }
 
