@@ -143,7 +143,7 @@ export function AuthForm({ mode }: AuthFormProps) {
             {isRegister && accountRole !== "patient" && (
               <>
                 <Field id="register-name" name="name" label="Full name" icon={UserRound} autoComplete="name" placeholder="Dr. Anna Keller" maxLength={100} />
-                <Field id="register-role" name="role" label="Role" icon={BriefcaseMedical} autoComplete="organization-title" placeholder="e.g. Nurse, General practitioner" maxLength={60} />
+                <Field id="register-role" name="role" label="Profession" icon={BriefcaseMedical} autoComplete="organization-title" placeholder="e.g. Nurse, General practitioner" maxLength={60} />
               </>
             )}
             <Field id={`${mode}-email`} name="email" type="email" label="Email address" icon={Mail} autoComplete="email" placeholder="name@clinic.ch" maxLength={254} />
