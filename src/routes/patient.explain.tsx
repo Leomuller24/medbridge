@@ -5,7 +5,19 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { usePatientText } from "@/lib/patient-i18n";
+import { usePatientLang, usePatientText } from "@/lib/patient-i18n";
+import { EXTRA_LANGUAGES, TRANSLATION_NOTICE, type ExplainKey, type ExtraLang } from "@/lib/symptom-translations";
+
+function useExtra() {
+  const l = usePatientLang();
+  if (l === "en" || l === "fr") return null;
+  const x = EXTRA_LANGUAGES[l as ExtraLang];
+  return { code: l, dir: x.dir, t: (k: ExplainKey) => x.text[k] };
+}
+
+function Notice() {
+  return <p dir="ltr" lang="en" className="mt-3 text-xs text-muted-foreground">{TRANSLATION_NOTICE}</p>;
+}
 
 export const Route = createFileRoute("/patient/explain")({
   head: () => ({
@@ -21,7 +33,7 @@ export const Route = createFileRoute("/patient/explain")({
   component: ExplainPage,
 });
 
-type Symptom = { id: string; en: string; fr: string; icon: LucideIcon };
+type Symptom = { id: ExplainKey; en: string; fr: string; icon: LucideIcon };
 
 const SYMPTOMS: Symptom[] = [
   { id: "headache", en: "Headache", fr: "Mal de tête", icon: Brain },
@@ -60,6 +72,7 @@ type View = null | "symptom" | "since" | "strength" | "where" | "doctor";
 
 function ExplainPage() {
   const t = usePatientText();
+  const x = useExtra();
   const [symptom, setSymptom] = useState<Symptom | null>(null);
   const [view, setView] = useState<View>(null);
   const [since, setSince] = useState<number | null>(null);
@@ -90,8 +103,18 @@ function ExplainPage() {
           <button key={s.id} type="button" onClick={() => open(s)}
             className="card flex min-h-36 flex-col items-center justify-center gap-3 p-5 text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <span className="icon-circle size-14"><s.icon className="size-7" aria-hidden="true" /></span>
-            <span className="text-lg font-semibold text-foreground">{s.en}</span>
-            <span className="text-base text-muted-foreground" lang="fr">{s.fr}</span>
+            {x ? (
+              <>
+                <span lang={x.code} dir={x.dir} className="text-xl font-semibold leading-snug text-foreground">{x.t(s.id)}</span>
+                <span className="text-base text-muted-foreground" lang="fr">{s.fr}</span>
+                <span dir="ltr" lang="en" className="text-[11px] leading-tight text-muted-foreground">{TRANSLATION_NOTICE}</span>
+              </>
+            ) : (
+              <>
+                <span className="text-lg font-semibold text-foreground">{s.en}</span>
+                <span className="text-base text-muted-foreground" lang="fr">{s.fr}</span>
+              </>
+            )}
           </button>
         ))}
       </div>
@@ -108,18 +131,34 @@ function ExplainPage() {
             {view === "symptom" && (
               <div className="mt-8 flex flex-1 flex-col">
                 <div className="card p-8 text-center">
-                  <p lang="fr" className="text-5xl font-bold leading-tight text-foreground sm:text-6xl">{symptom.fr}</p>
-                  <p className="mt-4 text-2xl text-muted-foreground">{symptom.en}</p>
+                  {x ? (
+                    <>
+                      <p lang={x.code} dir={x.dir} className="text-5xl font-bold leading-snug text-foreground sm:text-6xl">{x.t(symptom.id)}</p>
+                      <p lang="fr" className="mt-4 text-2xl text-muted-foreground">{symptom.fr}</p>
+                      <Notice />
+                    </>
+                  ) : (
+                    <>
+                      <p lang="fr" className="text-5xl font-bold leading-tight text-foreground sm:text-6xl">{symptom.fr}</p>
+                      <p className="mt-4 text-2xl text-muted-foreground">{symptom.en}</p>
+                    </>
+                  )}
                   <div className="mx-auto mt-6 h-10 w-3/4 border-b-2 border-dashed border-border" aria-label="Space for a second language" />
                 </div>
                 <div className="mt-6 grid gap-3">
-                  <FollowUp icon={CalendarClock} label="Since when? / Depuis quand ?" value={since !== null ? `${SINCE[since]!.fr} · ${SINCE[since]!.en}` : null} onClick={() => setView("since")} />
-                  <FollowUp icon={Gauge} label="How strong? / À quel point ?" value={strength ? `${strength} / 5` : null} onClick={() => setView("strength")} />
-                  <FollowUp icon={MapPin} label="Where? / Où ?" value={place ? `${place.fr} · ${place.en}` : null} onClick={() => setView("where")} />
+                  <FollowUp icon={CalendarClock} label="Since when? / Depuis quand ?" k="since" value={since !== null ? `${SINCE[since]!.fr} · ${SINCE[since]!.en}` : null} onClick={() => setView("since")} />
+                  <FollowUp icon={Gauge} label="How strong? / À quel point ?" k="strength" value={strength ? `${strength} / 5` : null} onClick={() => setView("strength")} />
+                  <FollowUp icon={MapPin} label="Where? / Où ?" k="where" value={place ? `${place.fr} · ${place.en}` : null} onClick={() => setView("where")} />
                 </div>
-                <button type="button" onClick={() => setView("doctor")} className="btn-primary mt-6 min-h-16 text-xl font-semibold">
-                  Show this to the doctor / Montrer au médecin
+                <button type="button" onClick={() => setView("doctor")} aria-label="Show this to the doctor / Montrer au médecin" className="btn-primary mt-6 flex min-h-16 flex-col items-center justify-center py-3 text-xl font-semibold">
+                  {x ? (
+                    <>
+                      <span lang={x.code} dir={x.dir}>{x.t("showDoctor")}</span>
+                      <span lang="fr" className="text-base font-normal">Montrer au médecin</span>
+                    </>
+                  ) : "Show this to the doctor / Montrer au médecin"}
                 </button>
+                {x && <p dir="ltr" className="mt-2 text-center text-xs text-muted-foreground">{TRANSLATION_NOTICE}</p>}
               </div>
             )}
 
@@ -172,8 +211,10 @@ function ExplainPage() {
 
             {view === "doctor" && (
               <div className="mt-8 card space-y-6 p-8 text-center">
-                <p lang="fr" className="text-5xl font-bold leading-tight text-foreground sm:text-6xl">{symptom.fr}</p>
+                {x && <p lang={x.code} dir={x.dir} className="text-5xl font-bold leading-snug text-foreground sm:text-6xl">{x.t(symptom.id)}</p>}
+                <p lang="fr" className={x ? "text-3xl font-semibold text-foreground" : "text-5xl font-bold leading-tight text-foreground sm:text-6xl"}>{symptom.fr}</p>
                 <p className="text-2xl text-muted-foreground">{symptom.en}</p>
+                {x && <Notice />}
                 {since !== null && <p className="text-3xl font-semibold text-foreground">{SINCE[since]!.fr}<span className="block text-xl font-normal text-muted-foreground">{SINCE[since]!.en}</span></p>}
                 {strength && <p className="text-3xl font-semibold text-foreground">{strength} / 5<span className="block text-xl font-normal text-muted-foreground">À quel point · How strong</span></p>}
                 {place && <p className="text-3xl font-semibold text-foreground">{place.fr}<span className="block text-xl font-normal text-muted-foreground">{place.en}</span></p>}
@@ -186,12 +227,21 @@ function ExplainPage() {
   );
 }
 
-function FollowUp({ icon: Icon, label, value, onClick }: { icon: LucideIcon; label: string; value: string | null; onClick: () => void }) {
+function FollowUp({ icon: Icon, label, k, value, onClick }: { icon: LucideIcon; label: string; k: ExplainKey; value: string | null; onClick: () => void }) {
+  const x = useExtra();
   return (
-    <button type="button" onClick={onClick} className="card flex min-h-16 items-center gap-4 p-4 text-left">
+    <button type="button" onClick={onClick} aria-label={label} className="card flex min-h-16 items-center gap-4 p-4 text-left">
       <span className="icon-circle size-12 shrink-0"><Icon className="size-6" aria-hidden="true" /></span>
       <span className="flex-1">
-        <span className="block text-lg font-semibold text-foreground">{label}</span>
+        {x ? (
+          <>
+            <span lang={x.code} dir={x.dir} className="block text-xl font-semibold text-foreground">{x.t(k)}</span>
+            <span lang="fr" className="block text-base text-muted-foreground">{label.split(" / ")[1]}</span>
+            <span dir="ltr" className="block text-[11px] text-muted-foreground">{TRANSLATION_NOTICE}</span>
+          </>
+        ) : (
+          <span className="block text-lg font-semibold text-foreground">{label}</span>
+        )}
         {value && <span className="block text-base text-primary">{value}</span>}
       </span>
     </button>
