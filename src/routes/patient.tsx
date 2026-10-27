@@ -60,7 +60,8 @@ function PatientLayout() {
           <div role="alert" className="flex items-center gap-3 rounded-[20px] border-2 border-destructive bg-destructive/10 p-5 text-lg font-semibold text-destructive">
             <Phone className="size-6 shrink-0" aria-hidden="true" /> {t.emergency}
           </div>
-          <p className="mt-4 text-center text-sm text-muted-foreground">{t.noData}</p>
+          <p className="mt-4 text-center text-sm font-medium text-foreground">{t.general}</p>
+          <p className="mt-1 text-center text-sm text-muted-foreground">{t.noData}</p>
         </footer>
       </div>
     </PatientLangContext.Provider>
