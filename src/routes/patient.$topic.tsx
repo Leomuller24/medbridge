@@ -1,7 +1,7 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 
-import { PATIENT_TOPICS, usePatientText, type PatientTopic } from "@/lib/patient-i18n";
+import { PatientBack } from "@/components/patient-back";
+import { PATIENT_TOPICS, useT, type PatientTopic } from "@/lib/patient-i18n";
 
 export const Route = createFileRoute("/patient/$topic")({
   beforeLoad: ({ params }) => {
@@ -22,15 +22,13 @@ export const Route = createFileRoute("/patient/$topic")({
 
 function TopicPage() {
   const { topic } = Route.useParams();
-  const t = usePatientText();
+  const { t } = useT();
   return (
     <div className="pt-4">
-      <Link to="/patient" className="inline-flex min-h-11 items-center gap-2 rounded-full border border-border bg-card px-5 text-base font-semibold text-foreground">
-        <ArrowLeft className="size-5" aria-hidden="true" /> {t.back}
-      </Link>
+      <PatientBack />
       <div className="card mt-6 p-8">
-        <h1 className="text-3xl font-semibold text-foreground">{t.topics[topic as PatientTopic]}</h1>
-        <p className="mt-3 text-lg text-muted-foreground">{t.soon}</p>
+        <h1 className="text-3xl font-semibold text-foreground">{t(`topic.${topic as PatientTopic}`)}</h1>
+        <p className="mt-3 text-lg text-muted-foreground">{t("soon")}</p>
       </div>
     </div>
   );
