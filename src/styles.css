@@ -19,8 +19,8 @@
  */
 
 @theme inline {
-  --font-sans: "Inter", sans-serif;
-  --font-display: "Plus Jakarta Sans", "Inter", sans-serif;
+  --font-sans: "Inter", "Noto Naskh Arabic", "Noto Sans Ethiopic", sans-serif;
+  --font-display: "Plus Jakarta Sans", "Inter", "Noto Naskh Arabic", "Noto Sans Ethiopic", sans-serif;
   --color-navy: var(--navy);
   --color-midnight: var(--midnight);
   --color-teal: var(--teal);
