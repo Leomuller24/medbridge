@@ -24,6 +24,9 @@ import { Route as AuthenticatedResourcesRouteImport } from './routes/_authentica
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as PatientIndexRouteImport } from './routes/patient.index'
 import { Route as PatientTopicRouteImport } from './routes/patient.$topic'
+import { Route as PatientHealthcareRouteImport } from './routes/patient.healthcare'
+import { Route as PatientPrepareRouteImport } from './routes/patient.prepare'
+import { Route as PatientRightsRouteImport } from './routes/patient.rights'
 import { Route as AuthenticatedCasesCaseIdRouteImport } from './routes/_authenticated/cases.$caseId'
 import { Route as AuthenticatedCasesNewRouteImport } from './routes/_authenticated/cases.new'
 import { Route as AuthenticatedCommunityIndexRouteImport } from './routes/_authenticated/community.index'
@@ -103,6 +106,21 @@ const PatientTopicRoute = PatientTopicRouteImport.update({
   path: '/$topic',
   getParentRoute: () => PatientRoute,
 } as any)
+const PatientHealthcareRoute = PatientHealthcareRouteImport.update({
+  id: '/healthcare',
+  path: '/healthcare',
+  getParentRoute: () => PatientRoute,
+} as any)
+const PatientPrepareRoute = PatientPrepareRouteImport.update({
+  id: '/prepare',
+  path: '/prepare',
+  getParentRoute: () => PatientRoute,
+} as any)
+const PatientRightsRoute = PatientRightsRouteImport.update({
+  id: '/rights',
+  path: '/rights',
+  getParentRoute: () => PatientRoute,
+} as any)
 const AuthenticatedCasesCaseIdRoute =
   AuthenticatedCasesCaseIdRouteImport.update({
     id: '/cases/$caseId',
@@ -141,6 +159,9 @@ export interface FileRoutesByFullPath {
   '/resources': typeof AuthenticatedResourcesRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/patient/$topic': typeof PatientTopicRoute
+  '/patient/healthcare': typeof PatientHealthcareRoute
+  '/patient/prepare': typeof PatientPrepareRoute
+  '/patient/rights': typeof PatientRightsRoute
   '/patient/': typeof PatientIndexRoute
   '/cases/$caseId': typeof AuthenticatedCasesCaseIdRoute
   '/cases/new': typeof AuthenticatedCasesNewRoute
@@ -160,6 +181,9 @@ export interface FileRoutesByTo {
   '/resources': typeof AuthenticatedResourcesRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/patient/$topic': typeof PatientTopicRoute
+  '/patient/healthcare': typeof PatientHealthcareRoute
+  '/patient/prepare': typeof PatientPrepareRoute
+  '/patient/rights': typeof PatientRightsRoute
   '/patient': typeof PatientIndexRoute
   '/cases/$caseId': typeof AuthenticatedCasesCaseIdRoute
   '/cases/new': typeof AuthenticatedCasesNewRoute
@@ -182,6 +206,9 @@ export interface FileRoutesById {
   '/_authenticated/resources': typeof AuthenticatedResourcesRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/patient/$topic': typeof PatientTopicRoute
+  '/patient/healthcare': typeof PatientHealthcareRoute
+  '/patient/prepare': typeof PatientPrepareRoute
+  '/patient/rights': typeof PatientRightsRoute
   '/patient/': typeof PatientIndexRoute
   '/_authenticated/cases/$caseId': typeof AuthenticatedCasesCaseIdRoute
   '/_authenticated/cases/new': typeof AuthenticatedCasesNewRoute
@@ -204,6 +231,9 @@ export interface FileRouteTypes {
     | '/resources'
     | '/settings'
     | '/patient/$topic'
+    | '/patient/healthcare'
+    | '/patient/prepare'
+    | '/patient/rights'
     | '/patient/'
     | '/cases/$caseId'
     | '/cases/new'
@@ -223,6 +253,9 @@ export interface FileRouteTypes {
     | '/resources'
     | '/settings'
     | '/patient/$topic'
+    | '/patient/healthcare'
+    | '/patient/prepare'
+    | '/patient/rights'
     | '/patient'
     | '/cases/$caseId'
     | '/cases/new'
@@ -244,6 +277,9 @@ export interface FileRouteTypes {
     | '/_authenticated/resources'
     | '/_authenticated/settings'
     | '/patient/$topic'
+    | '/patient/healthcare'
+    | '/patient/prepare'
+    | '/patient/rights'
     | '/patient/'
     | '/_authenticated/cases/$caseId'
     | '/_authenticated/cases/new'
@@ -367,6 +403,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PatientTopicRouteImport
       parentRoute: typeof PatientRoute
     }
+    '/patient/healthcare': {
+      id: '/patient/healthcare'
+      path: '/healthcare'
+      fullPath: '/patient/healthcare'
+      preLoaderRoute: typeof PatientHealthcareRouteImport
+      parentRoute: typeof PatientRoute
+    }
+    '/patient/prepare': {
+      id: '/patient/prepare'
+      path: '/prepare'
+      fullPath: '/patient/prepare'
+      preLoaderRoute: typeof PatientPrepareRouteImport
+      parentRoute: typeof PatientRoute
+    }
+    '/patient/rights': {
+      id: '/patient/rights'
+      path: '/rights'
+      fullPath: '/patient/rights'
+      preLoaderRoute: typeof PatientRightsRouteImport
+      parentRoute: typeof PatientRoute
+    }
     '/_authenticated/cases/$caseId': {
       id: '/_authenticated/cases/$caseId'
       path: '/cases/$caseId'
@@ -431,11 +488,17 @@ const AuthenticatedRouteRouteWithChildren =
 
 interface PatientRouteChildren {
   PatientTopicRoute: typeof PatientTopicRoute
+  PatientHealthcareRoute: typeof PatientHealthcareRoute
+  PatientPrepareRoute: typeof PatientPrepareRoute
+  PatientRightsRoute: typeof PatientRightsRoute
   PatientIndexRoute: typeof PatientIndexRoute
 }
 
 const PatientRouteChildren: PatientRouteChildren = {
   PatientTopicRoute: PatientTopicRoute,
+  PatientHealthcareRoute: PatientHealthcareRoute,
+  PatientPrepareRoute: PatientPrepareRoute,
+  PatientRightsRoute: PatientRightsRoute,
   PatientIndexRoute: PatientIndexRoute,
 }
 
