@@ -5,11 +5,11 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { usePatientLang, usePatientText } from "@/lib/patient-i18n";
+import { usePatientFullLang, usePatientText } from "@/lib/patient-i18n";
 import { EXTRA_LANGUAGES, TRANSLATION_NOTICE, type ExplainKey, type ExtraLang } from "@/lib/symptom-translations";
 
 function useExtra() {
-  const l = usePatientLang();
+  const l = usePatientFullLang();
   if (l === "en" || l === "fr") return null;
   const x = EXTRA_LANGUAGES[l as ExtraLang];
   return { code: l, dir: x.dir, t: (k: ExplainKey) => x.text[k] };

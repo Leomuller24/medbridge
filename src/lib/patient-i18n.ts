@@ -1,7 +1,12 @@
 import { createContext, useContext } from "react";
 
 export const PLACEHOLDER = { en: "Placeholder — official wording will be added here later.", fr: "Espace réservé — le texte officiel sera ajouté ici plus tard." } as const;
-export function usePatientLang() {
+/** English or French — the other patient pages are only in these two for now. */
+export function usePatientLang(): "en" | "fr" {
+  return useContext(PatientLangContext) === "fr" ? "fr" : "en";
+}
+/** The full selected language, including the extra migrant languages. */
+export function usePatientFullLang(): PatientLang {
   return useContext(PatientLangContext);
 }
 

@@ -32,7 +32,7 @@ function PatientLayout() {
     setLang(l);
     window.localStorage.setItem(LANG_KEY, l);
   }
-  const t = PATIENT_TEXT[lang];
+  const t = PATIENT_TEXT[lang === "fr" ? "fr" : "en"];
   return (
     <PatientLangContext.Provider value={lang}>
       <div className="bg-soft flex min-h-screen flex-col" lang={lang === "fr" ? "fr" : "en"}>
