@@ -1,4 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { clearStoredRole, getStoredRole } from "@/lib/role";
 import {
   AlertTriangle, ArrowRight, BookOpen, Check, Globe, HeartHandshake, HelpCircle, Languages, LogIn,
   MessageCircleMore, NotebookPen, Rocket, Search, ShieldCheck, Sparkles, Stethoscope, UsersRound,
@@ -36,6 +38,12 @@ function Label({ children, light }: { children: string; light?: boolean }) {
 }
 
 function Index() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const role = getStoredRole();
+    if (!role) navigate({ to: "/choose-role", replace: true });
+    else if (role === "patient") navigate({ to: "/patient", replace: true });
+  }, [navigate]);
   return (
     <div className="bg-background">
       <WelcomeHeader />
@@ -363,7 +371,8 @@ function Footer() {
       <div className="border-t border-primary-foreground/10">
         <div className="mx-auto flex max-w-7xl flex-col gap-2 px-5 py-6 text-xs text-primary-foreground/60 sm:flex-row sm:justify-between sm:px-8 lg:px-10">
           <p className="flex items-center gap-2"><ShieldCheck aria-hidden="true" className="size-4 text-aqua" /> MedBridge does not store patient data.</p>
-          <p>MedBridge is informational only and is not medical advice.</p>
+          <p>This tool gives general information. It does not replace a doctor and cannot diagnose.</p>
+          <button type="button" onClick={() => { clearStoredRole(); window.location.assign("/choose-role"); }} className="text-left underline-offset-2 hover:underline">Switch role</button>
         </div>
       </div>
     </footer>

@@ -11,3 +11,11 @@
 - [x] Weekly contribution streak with flame on profile (one skipped week per month)
 - [x] "Needs an answer" section + Unanswered filter; +2 bonus for first helpful answer
 - [x] Anti-cheat: ignore votes from accounts <7 days, 10 votes/day, no ranking, Newcomer/Helper/Trusted levels
+- [x] Secrets / personal data scan + root README
+- [x] Role choice first screen (provider / patient), remembered on device, "Switch role" link
+- [x] Patient home (no login): 4 large buttons, placeholder pages, emergency 144/112 box, FR/EN switcher
+- [x] Patient "Prepare my appointment" checklist (device-only)
+- [x] Patient "How healthcare works here" 4 steps + migesplus + interpreter line
+- [x] Patient "My rights and my privacy": placeholders + official links only
+- [x] Footer "This tool gives general information..." on patient + provider views
+- [x] Provider Home: points / streak / level card linking to profile

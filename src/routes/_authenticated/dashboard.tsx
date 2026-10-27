@@ -19,6 +19,22 @@ import { Button } from "@/components/ui/button";
 import { useProfile } from "@/hooks/use-profile";
 import { useStore } from "@/lib/local-store";
 import { ARTICLES } from "@/lib/medbridge-data";
+import { ME, level, pointsByAuthor, weeklyStreak } from "@/lib/reputation";
+import { Award, Flame, Star } from "lucide-react";
+
+function ContributionCard() {
+  const store = useStore();
+  const points = pointsByAuthor(store.posts)[ME] ?? 0;
+  const streak = weeklyStreak(store.activity);
+  return (
+    <Link to="/settings" className="card mt-6 flex flex-wrap items-center gap-x-8 gap-y-3 p-5" aria-label="Your contributions — open your profile">
+      <span className="flex items-center gap-2 text-sm text-muted-foreground"><Star className="size-4 text-primary" aria-hidden="true" /><b className="text-lg text-foreground">{points}</b> points</span>
+      <span className="flex items-center gap-2 text-sm text-muted-foreground"><Flame className="size-4 text-coral" aria-hidden="true" /><b className="text-lg text-foreground">{streak}</b> {streak === 1 ? "week" : "weeks"} streak</span>
+      <span className="flex items-center gap-2 text-sm text-muted-foreground"><Award className="size-4 text-primary" aria-hidden="true" /><b className="text-lg text-foreground">{level(points)}</b></span>
+      <span className="ml-auto flex items-center gap-1 text-sm font-medium text-primary">View profile <ArrowRight className="size-4" aria-hidden="true" /></span>
+    </Link>
+  );
+}
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -97,6 +113,8 @@ function Dashboard() {
           </Button>
         </div>
       </section>
+
+      <ContributionCard />
 
       {/* Stat cards */}
       <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">

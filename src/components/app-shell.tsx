@@ -1,3 +1,5 @@
+import { clearStoredRole } from "@/lib/role";
+import { Repeat } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { BookOpen, FolderOpen, Globe, Home, LogOut, NotebookPen, Search, Settings, ShieldCheck, UsersRound, type LucideIcon } from "lucide-react";
@@ -71,7 +73,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <div className="md:pl-64">
         <TopBar />
-        <div className="pb-20 md:pb-0">{children}</div>
+        <div className="pb-20 md:pb-0">{children}<p className="px-5 pb-6 text-center text-xs text-muted-foreground">This tool gives general information. It does not replace a doctor and cannot diagnose.</p></div>
       </div>
 
       <nav aria-label="Mobile navigation" className="fixed inset-x-0 bottom-0 z-40 grid border-t border-border bg-card/95 backdrop-blur md:hidden" style={{ gridTemplateColumns: `repeat(${nav.length}, minmax(0, 1fr))` }}>
@@ -183,6 +185,7 @@ function AvatarMenu() {
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => navigate({ to: "/settings" })}><Settings className="size-4" /> Settings</DropdownMenuItem>
         {isAdmin && <DropdownMenuItem onClick={() => navigate({ to: "/admin" })}><ShieldCheck className="size-4" /> Admin</DropdownMenuItem>}
+        <DropdownMenuItem onClick={() => { clearStoredRole(); navigate({ to: "/choose-role" }); }}><Repeat className="size-4" /> Switch role</DropdownMenuItem>
         <DropdownMenuItem
           onClick={async () => {
             await queryClient.cancelQueries();
