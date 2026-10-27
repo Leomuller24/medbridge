@@ -102,14 +102,14 @@ function ExplainPage() {
             className="card flex min-h-36 flex-col items-center justify-center gap-2 p-5 text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <span className="icon-circle size-14"><s.icon className="size-7" aria-hidden="true" /></span>
             <span className="text-xl font-semibold leading-snug text-foreground">{main(s.key)}</span>
-            <span lang={subLang} className="text-base text-muted-foreground">{sub(s.key)}</span>
+            <span lang={subLang} dir="ltr" className="text-base text-muted-foreground">{sub(s.key)}</span>
             <Notice className="text-[11px]" />
           </button>
         ))}
       </div>
 
       {symptom && view && (
-        <div role="dialog" aria-modal="true" aria-label={main(symptom)} className="fixed inset-0 z-50 overflow-y-auto bg-background">
+        <div role="dialog" aria-modal="true" aria-label={main(symptom)} className="fixed inset-0 z-50 overflow-y-auto bg-background pt-[calc(4.5rem+env(safe-area-inset-top))]">
           <div className="mx-auto flex min-h-full max-w-2xl flex-col px-5 py-6">
             <button type="button" onClick={() => setView(view === "symptom" ? null : "symptom")}
               className="inline-flex min-h-12 items-center gap-2 self-start rounded-full border border-border bg-card px-5 text-base font-semibold text-foreground">
@@ -121,7 +121,7 @@ function ExplainPage() {
               <div className="mt-8 flex flex-1 flex-col">
                 <div className="card p-8 text-center">
                   <p className="text-5xl font-bold leading-snug text-foreground sm:text-6xl">{main(symptom)}</p>
-                  <p lang={subLang} className="mt-4 text-2xl text-muted-foreground">{sub(symptom)}</p>
+                  <p lang={subLang} dir="ltr" className="mt-4 text-2xl text-muted-foreground">{sub(symptom)}</p>
                   <Notice className="mt-3" />
                   <div className="mx-auto mt-6 h-10 w-3/4 border-b-2 border-dashed border-border" aria-label={t("secondLang")} />
                 </div>
@@ -132,7 +132,7 @@ function ExplainPage() {
                 </div>
                 <button type="button" onClick={() => setView("doctor")} className="btn-primary mt-6 flex min-h-16 flex-col items-center justify-center py-3 text-xl font-semibold">
                   <span>{main("q.showDoctor")}</span>
-                  <span lang={subLang} className="text-base font-normal">{sub("q.showDoctor")}</span>
+                  <span lang={subLang} dir="ltr" className="text-base font-normal">{sub("q.showDoctor")}</span>
                 </button>
                 <Notice className="mt-2 text-center" />
               </div>
@@ -192,7 +192,7 @@ function ExplainPage() {
               <div className="card mt-8 space-y-6 p-8 text-center">
                 <div>
                   <p className="text-5xl font-bold leading-snug text-foreground sm:text-6xl">{main(symptom)}</p>
-                  <p lang={subLang} className="mt-3 text-3xl font-semibold text-muted-foreground">{sub(symptom)}</p>
+                  <p lang={subLang} dir="ltr" className="mt-3 text-3xl font-semibold text-muted-foreground">{sub(symptom)}</p>
                 </div>
                 {since && <Answer k={since} />}
                 {strength && <p className="text-3xl font-semibold text-foreground">{strength} / 5<span className="block text-xl font-normal text-muted-foreground">{main("q.strength")} · {sub("q.strength")}</span></p>}
@@ -211,7 +211,7 @@ function Answer({ k }: { k: PatientKey }) {
   const { main, sub, subLang } = usePair();
   return (
     <p className="text-3xl font-semibold text-foreground">
-      {main(k)}<span lang={subLang} className="block text-xl font-normal text-muted-foreground">{sub(k)}</span>
+      {main(k)}<span lang={subLang} dir="ltr" className="block text-xl font-normal text-muted-foreground">{sub(k)}</span>
     </p>
   );
 }
@@ -223,7 +223,7 @@ function FollowUp({ icon: Icon, k, value, onClick }: { icon: LucideIcon; k: Pati
       <span className="icon-circle size-12 shrink-0"><Icon className="size-6" aria-hidden="true" /></span>
       <span className="flex-1">
         <span className="block text-xl font-semibold text-foreground">{main(k)}</span>
-        <span lang={subLang} className="block text-base text-muted-foreground">{sub(k)}</span>
+        <span lang={subLang} dir="ltr" className="block text-base text-muted-foreground">{sub(k)}</span>
         {value && <span className="block text-base text-primary">{value}</span>}
         <Notice className="mt-1 text-[11px]" />
       </span>
@@ -236,8 +236,8 @@ function Section({ k, extra, children }: { k: PatientKey; extra?: PatientKey; ch
   return (
     <div className="mt-8">
       <h2 className="text-4xl font-bold leading-snug text-foreground">{main(k)}</h2>
-      <p lang={subLang} className="mt-2 text-xl text-muted-foreground">{sub(k)}</p>
-      {extra && <p className="mt-2 text-lg text-foreground">{main(extra)} <span lang={subLang} className="text-muted-foreground">· {sub(extra)}</span></p>}
+      <p lang={subLang} dir="ltr" className="mt-2 text-xl text-muted-foreground">{sub(k)}</p>
+      {extra && <p className="mt-2 text-lg text-foreground">{main(extra)} <span lang={subLang} dir="ltr" className="text-muted-foreground">· {sub(extra)}</span></p>}
       <div className="mt-6">{children}</div>
     </div>
   );
@@ -249,7 +249,7 @@ function BigChoice({ k, active, onClick }: { k: PatientKey; active: boolean; onC
     <button type="button" onClick={onClick}
       className={`min-h-16 rounded-2xl border-2 px-5 py-3 text-start ${active ? "border-primary bg-accent" : "border-border bg-card"}`}>
       <span className="block text-2xl font-semibold text-foreground">{main(k)}</span>
-      <span lang={subLang} className="block text-base text-muted-foreground">{sub(k)}</span>
+      <span lang={subLang} dir="ltr" className="block text-base text-muted-foreground">{sub(k)}</span>
     </button>
   );
 }
