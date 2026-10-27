@@ -109,7 +109,7 @@ function ExplainPage() {
       </div>
 
       {symptom && view && (
-        <div role="dialog" aria-modal="true" aria-label={main(symptom)} className="fixed inset-0 z-50 overflow-y-auto bg-background">
+        <div role="dialog" aria-modal="true" aria-label={main(symptom)} className="fixed inset-0 z-50 overflow-y-auto bg-background pt-[calc(4.5rem+env(safe-area-inset-top))]">
           <div className="mx-auto flex min-h-full max-w-2xl flex-col px-5 py-6">
             <button type="button" onClick={() => setView(view === "symptom" ? null : "symptom")}
               className="inline-flex min-h-12 items-center gap-2 self-start rounded-full border border-border bg-card px-5 text-base font-semibold text-foreground">
