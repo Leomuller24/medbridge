@@ -15,4 +15,4 @@
 - Admin rights come only from the public.user_roles table checked with has_role(); never from profile fields or browser storage — prevents privilege escalation.
 - AI moderation runs in a createServerFn (src/lib/moderation.functions.ts) that requires sign-in; content is sent for review but never stored server-side — keeps the browser-only data rule.
 - Handover QR codes are generated in the browser and encode the card text itself — nothing is fetched or stored on a server.
-- Patient side lives under src/routes/patient* with no sign-in; it stores only the role, language and checklist ticks in browser storage and never calls the backend — patients must never give personal data.
+- Patient side lives under src/routes/patient* with no sign-in; patient pages store only the role, language and checklist ticks in browser storage and never call the backend; an optional patient account holds only email, password and profiles.account_role ('provider' default, so legacy users are providers) — patients must never give personal data.
