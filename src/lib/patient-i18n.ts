@@ -4,7 +4,7 @@ import { LANGUAGE_INFO, translate, type PatientKey, type PatientLang } from "@/l
 
 export type { PatientLang, PatientKey };
 
-export const PATIENT_TOPICS = ["prepare", "explain", "healthcare", "rights"] as const;
+export const PATIENT_TOPICS = ["prepare", "explain", "translate", "healthcare", "rights"] as const;
 export type PatientTopic = (typeof PATIENT_TOPICS)[number];
 
 export const PatientLangContext = createContext<PatientLang>("en");
