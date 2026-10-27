@@ -6,6 +6,13 @@ import { Logo } from "@/components/logo";
 import { PATIENT_TEXT, PatientLangContext, type PatientLang } from "@/lib/patient-i18n";
 import { clearStoredRole, setStoredRole } from "@/lib/role";
 import { cn } from "@/lib/utils";
+import { EXTRA_LANGUAGES, type ExtraLang } from "@/lib/symptom-translations";
+
+const LANGS: { code: PatientLang; name: string }[] = [
+  { code: "fr", name: "Français" },
+  { code: "en", name: "English" },
+  ...(Object.keys(EXTRA_LANGUAGES) as ExtraLang[]).map((code) => ({ code, name: EXTRA_LANGUAGES[code].name })),
+];
 
 export const Route = createFileRoute("/patient")({
   component: PatientLayout,
@@ -18,7 +25,8 @@ function PatientLayout() {
   const [lang, setLang] = useState<PatientLang>("en");
   useEffect(() => {
     setStoredRole("patient");
-    if (window.localStorage.getItem(LANG_KEY) === "fr") setLang("fr");
+    const saved = window.localStorage.getItem(LANG_KEY);
+    if (saved && LANGS.some((l) => l.code === saved)) setLang(saved as PatientLang);
   }, []);
   function choose(l: PatientLang) {
     setLang(l);
@@ -27,20 +35,22 @@ function PatientLayout() {
   const t = PATIENT_TEXT[lang];
   return (
     <PatientLangContext.Provider value={lang}>
-      <div className="bg-soft flex min-h-screen flex-col" lang={lang}>
+      <div className="bg-soft flex min-h-screen flex-col" lang={lang === "fr" ? "fr" : "en"}>
         <header className="mx-auto flex w-full max-w-3xl flex-wrap items-center justify-between gap-3 px-5 py-5">
           <Link to="/patient" aria-label="Patient home"><Logo /></Link>
           <div className="flex items-center gap-2">
-            <div className="flex rounded-full border border-border bg-card p-1" role="group" aria-label="Language">
-              {(["fr", "en"] as const).map((l) => (
+            <div className="flex flex-wrap gap-1 rounded-[20px] border border-border bg-card p-1" role="group" aria-label="Language">
+              {LANGS.map(({ code: l, name }) => (
                 <button
                   key={l}
                   type="button"
+                  lang={l}
+                  dir={l in EXTRA_LANGUAGES ? EXTRA_LANGUAGES[l as ExtraLang].dir : "ltr"}
                   onClick={() => choose(l)}
                   aria-pressed={lang === l}
                   className={cn("min-h-10 rounded-full px-4 text-sm font-semibold", lang === l ? "bg-primary text-primary-foreground" : "text-muted-foreground")}
                 >
-                  {l === "fr" ? "Français" : "English"}
+                  {name}
                 </button>
               ))}
             </div>

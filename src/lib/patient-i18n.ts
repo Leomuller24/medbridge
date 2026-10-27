@@ -5,7 +5,9 @@ export function usePatientLang() {
   return useContext(PatientLangContext);
 }
 
-export type PatientLang = "en" | "fr";
+import type { ExtraLang } from "@/lib/symptom-translations";
+
+export type PatientLang = "en" | "fr" | ExtraLang;
 
 export const PATIENT_TOPICS = ["prepare", "explain", "healthcare", "rights"] as const;
 export type PatientTopic = (typeof PATIENT_TOPICS)[number];
@@ -47,5 +49,7 @@ export const PATIENT_TEXT = {
 
 export const PatientLangContext = createContext<PatientLang>("en");
 export function usePatientText() {
-  return PATIENT_TEXT[useContext(PatientLangContext)];
+  const l = useContext(PatientLangContext);
+  // Other patient pages are only in English and French for now.
+  return PATIENT_TEXT[l === "fr" ? "fr" : "en"];
 }
