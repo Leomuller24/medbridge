@@ -1,11 +1,18 @@
 import { createContext, useContext } from "react";
 
 export const PLACEHOLDER = { en: "Placeholder — official wording will be added here later.", fr: "Espace réservé — le texte officiel sera ajouté ici plus tard." } as const;
-export function usePatientLang() {
+/** English or French — the other patient pages are only in these two for now. */
+export function usePatientLang(): "en" | "fr" {
+  return useContext(PatientLangContext) === "fr" ? "fr" : "en";
+}
+/** The full selected language, including the extra migrant languages. */
+export function usePatientFullLang(): PatientLang {
   return useContext(PatientLangContext);
 }
 
-export type PatientLang = "en" | "fr";
+import type { ExtraLang } from "@/lib/symptom-translations";
+
+export type PatientLang = "en" | "fr" | ExtraLang;
 
 export const PATIENT_TOPICS = ["prepare", "explain", "healthcare", "rights"] as const;
 export type PatientTopic = (typeof PATIENT_TOPICS)[number];
@@ -47,5 +54,7 @@ export const PATIENT_TEXT = {
 
 export const PatientLangContext = createContext<PatientLang>("en");
 export function usePatientText() {
-  return PATIENT_TEXT[useContext(PatientLangContext)];
+  const l = useContext(PatientLangContext);
+  // Other patient pages are only in English and French for now.
+  return PATIENT_TEXT[l === "fr" ? "fr" : "en"];
 }
