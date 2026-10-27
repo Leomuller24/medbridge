@@ -11,3 +11,6 @@
 - [x] Weekly contribution streak with flame on profile (one skipped week per month)
 - [x] "Needs an answer" section + Unanswered filter; +2 bonus for first helpful answer
 - [x] Anti-cheat: ignore votes from accounts <7 days, 10 votes/day, no ranking, Newcomer/Helper/Trusted levels
+- [x] Secrets / personal data scan + root README
+- [x] Role choice first screen (provider / patient), remembered on device, "Switch role" link
+- [x] Patient home (no login): 4 large buttons, placeholder pages, emergency 144/112 box, FR/EN switcher
