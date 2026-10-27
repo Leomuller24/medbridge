@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { useSession } from "@/hooks/use-session";
 import { lovable } from "@/integrations/lovable/index";
 import { supabase } from "@/integrations/supabase/client";
+import { setStoredRole } from "@/lib/role";
 
 type AuthFormProps = {
   mode: "login" | "register";
@@ -18,6 +19,7 @@ const credentials = z.object({
   email: z.string().trim().email("Enter a valid email address.").max(254),
   password: z.string().min(8, "Password must be at least 8 characters.").max(128),
 });
+const patientRegistration = credentials;
 const registration = credentials.extend({
   name: z.string().trim().min(1, "Enter your name.").max(100),
   role: z.string().trim().min(1, "Enter your role.").max(60),
@@ -30,10 +32,21 @@ export function AuthForm({ mode }: AuthFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [accountRole, setAccountRole] = useState<"provider" | "patient" | null>(null);
   const [challenge, setChallenge] = useState<{ a: number; b: number; start: number } | null>(null);
 
   useEffect(() => {
-    if (session) navigate({ to: "/dashboard", replace: true });
+    if (!session) return;
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase.from("profiles").select("account_role").eq("id", session.user.id).maybeSingle();
+      if (cancelled) return;
+      // Users without a saved role are treated as providers.
+      const role = data?.account_role === "patient" ? "patient" : "provider";
+      setStoredRole(role);
+      navigate({ to: role === "patient" ? "/patient" : "/dashboard", replace: true });
+    })();
+    return () => { cancelled = true; };
   }, [session, navigate]);
 
   useEffect(() => {
@@ -45,7 +58,12 @@ export function AuthForm({ mode }: AuthFormProps) {
     setError(null);
     setNotice(null);
     const form = Object.fromEntries(new FormData(event.currentTarget));
-    const parsed = (isRegister ? registration : credentials).safeParse(form);
+    if (isRegister && !accountRole) {
+      setError("Please choose whether you are a healthcare provider or a patient.");
+      return;
+    }
+    const isPatient = isRegister && accountRole === "patient";
+    const parsed = (isRegister ? (isPatient ? patientRegistration : registration) : credentials).safeParse(form);
     if (!parsed.success) {
       setError(parsed.error.issues[0]?.message ?? "Please check your details.");
       return;
@@ -61,13 +79,13 @@ export function AuthForm({ mode }: AuthFormProps) {
     setBusy(true);
     try {
       if (isRegister) {
-        const d = parsed.data as z.infer<typeof registration>;
+        const d = parsed.data as Partial<z.infer<typeof registration>> & z.infer<typeof credentials>;
         const { data, error: err } = await supabase.auth.signUp({
           email: d.email,
           password: d.password,
           options: {
             emailRedirectTo: window.location.origin,
-            data: { display_name: d.name, role: d.role },
+            data: isPatient ? { account_role: "patient" } : { display_name: d.name, role: d.role, account_role: "provider" },
           },
         });
         if (err) throw err;
@@ -110,6 +128,19 @@ export function AuthForm({ mode }: AuthFormProps) {
 
           <form className="space-y-5" onSubmit={handleSubmit} noValidate>
             {isRegister && (
+              <fieldset className="space-y-2">
+                <legend className="text-sm font-medium text-foreground">I am… <span className="text-destructive">*</span></legend>
+                <div className="grid gap-3 sm:grid-cols-2" role="radiogroup" aria-required="true">
+                  {([["provider", "I am a healthcare provider"], ["patient", "I am a patient"]] as const).map(([value, label]) => (
+                    <label key={value} className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-2xl border px-4 text-sm font-medium ${accountRole === value ? "border-primary bg-accent text-foreground" : "border-border text-muted-foreground"}`}>
+                      <input type="radio" name="account_role" value={value} required checked={accountRole === value} onChange={() => setAccountRole(value)} className="accent-[var(--primary)]" />
+                      {label}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            )}
+            {isRegister && accountRole !== "patient" && (
               <>
                 <Field id="register-name" name="name" label="Full name" icon={UserRound} autoComplete="name" placeholder="Dr. Anna Keller" maxLength={100} />
                 <Field id="register-role" name="role" label="Role" icon={BriefcaseMedical} autoComplete="organization-title" placeholder="e.g. Nurse, General practitioner" maxLength={60} />

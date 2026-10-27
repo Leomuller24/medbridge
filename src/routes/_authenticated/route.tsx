@@ -8,6 +8,8 @@ export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async () => {
     const { data, error } = await supabase.auth.getUser();
     if (error || !data.user) throw redirect({ to: "/login" });
+    const { data: profile } = await supabase.from("profiles").select("account_role").eq("id", data.user.id).maybeSingle();
+    if (profile?.account_role === "patient") throw redirect({ to: "/patient" });
     return { user: data.user };
   },
   component: AuthenticatedLayout,
