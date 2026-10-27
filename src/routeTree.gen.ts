@@ -24,6 +24,7 @@ import { Route as AuthenticatedResourcesRouteImport } from './routes/_authentica
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as PatientIndexRouteImport } from './routes/patient.index'
 import { Route as PatientTopicRouteImport } from './routes/patient.$topic'
+import { Route as PatientExplainRouteImport } from './routes/patient.explain'
 import { Route as PatientHealthcareRouteImport } from './routes/patient.healthcare'
 import { Route as PatientPrepareRouteImport } from './routes/patient.prepare'
 import { Route as PatientRightsRouteImport } from './routes/patient.rights'
@@ -106,6 +107,11 @@ const PatientTopicRoute = PatientTopicRouteImport.update({
   path: '/$topic',
   getParentRoute: () => PatientRoute,
 } as any)
+const PatientExplainRoute = PatientExplainRouteImport.update({
+  id: '/explain',
+  path: '/explain',
+  getParentRoute: () => PatientRoute,
+} as any)
 const PatientHealthcareRoute = PatientHealthcareRouteImport.update({
   id: '/healthcare',
   path: '/healthcare',
@@ -159,6 +165,7 @@ export interface FileRoutesByFullPath {
   '/resources': typeof AuthenticatedResourcesRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/patient/$topic': typeof PatientTopicRoute
+  '/patient/explain': typeof PatientExplainRoute
   '/patient/healthcare': typeof PatientHealthcareRoute
   '/patient/prepare': typeof PatientPrepareRoute
   '/patient/rights': typeof PatientRightsRoute
@@ -181,6 +188,7 @@ export interface FileRoutesByTo {
   '/resources': typeof AuthenticatedResourcesRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/patient/$topic': typeof PatientTopicRoute
+  '/patient/explain': typeof PatientExplainRoute
   '/patient/healthcare': typeof PatientHealthcareRoute
   '/patient/prepare': typeof PatientPrepareRoute
   '/patient/rights': typeof PatientRightsRoute
@@ -206,6 +214,7 @@ export interface FileRoutesById {
   '/_authenticated/resources': typeof AuthenticatedResourcesRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/patient/$topic': typeof PatientTopicRoute
+  '/patient/explain': typeof PatientExplainRoute
   '/patient/healthcare': typeof PatientHealthcareRoute
   '/patient/prepare': typeof PatientPrepareRoute
   '/patient/rights': typeof PatientRightsRoute
@@ -231,6 +240,7 @@ export interface FileRouteTypes {
     | '/resources'
     | '/settings'
     | '/patient/$topic'
+    | '/patient/explain'
     | '/patient/healthcare'
     | '/patient/prepare'
     | '/patient/rights'
@@ -253,6 +263,7 @@ export interface FileRouteTypes {
     | '/resources'
     | '/settings'
     | '/patient/$topic'
+    | '/patient/explain'
     | '/patient/healthcare'
     | '/patient/prepare'
     | '/patient/rights'
@@ -277,6 +288,7 @@ export interface FileRouteTypes {
     | '/_authenticated/resources'
     | '/_authenticated/settings'
     | '/patient/$topic'
+    | '/patient/explain'
     | '/patient/healthcare'
     | '/patient/prepare'
     | '/patient/rights'
@@ -403,6 +415,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PatientTopicRouteImport
       parentRoute: typeof PatientRoute
     }
+    '/patient/explain': {
+      id: '/patient/explain'
+      path: '/explain'
+      fullPath: '/patient/explain'
+      preLoaderRoute: typeof PatientExplainRouteImport
+      parentRoute: typeof PatientRoute
+    }
     '/patient/healthcare': {
       id: '/patient/healthcare'
       path: '/healthcare'
@@ -488,6 +507,7 @@ const AuthenticatedRouteRouteWithChildren =
 
 interface PatientRouteChildren {
   PatientTopicRoute: typeof PatientTopicRoute
+  PatientExplainRoute: typeof PatientExplainRoute
   PatientHealthcareRoute: typeof PatientHealthcareRoute
   PatientPrepareRoute: typeof PatientPrepareRoute
   PatientRightsRoute: typeof PatientRightsRoute
@@ -496,6 +516,7 @@ interface PatientRouteChildren {
 
 const PatientRouteChildren: PatientRouteChildren = {
   PatientTopicRoute: PatientTopicRoute,
+  PatientExplainRoute: PatientExplainRoute,
   PatientHealthcareRoute: PatientHealthcareRoute,
   PatientPrepareRoute: PatientPrepareRoute,
   PatientRightsRoute: PatientRightsRoute,
