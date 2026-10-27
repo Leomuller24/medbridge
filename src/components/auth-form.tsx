@@ -43,6 +43,7 @@ export function AuthForm({ mode }: AuthFormProps) {
 
   useEffect(() => {
     if (cooldownUntil <= Date.now()) return;
+    setNow(Date.now());
     const t = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(t);
   }, [cooldownUntil]);
