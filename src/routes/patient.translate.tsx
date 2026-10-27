@@ -25,7 +25,7 @@ export const Route = createFileRoute("/patient/translate")({
 type Direction = "toMe" | "toDoctor";
 
 function TranslatePage() {
-  const { t, lang, dir } = useT();
+  const { t, lang } = useT();
   const translate = useServerFn(translateText);
   // Text lives only in this page's memory; it disappears when the page is left.
   const [direction, setDirection] = useState<Direction>("toMe");
@@ -62,7 +62,7 @@ function TranslatePage() {
       <p className="mt-4 flex items-start gap-3 rounded-2xl bg-accent p-4 text-base font-medium text-accent-foreground">
         <ShieldCheck className="mt-0.5 size-5 shrink-0" aria-hidden="true" /> {t("tr.privacy")}
       </p>
-      <p role="note" className="mt-3 flex items-start gap-3 rounded-2xl border-2 border-warning/60 bg-warning/15 p-4 text-base font-semibold text-foreground">
+      <p role="note" className="mt-3 flex items-start gap-3 rounded-2xl border-2 border-destructive/40 bg-secondary p-4 text-base font-semibold text-foreground">
         <ShieldAlert className="mt-0.5 size-5 shrink-0" aria-hidden="true" /> {t("tr.warning")}
       </p>
 
@@ -119,7 +119,6 @@ function TranslatePage() {
         </a>
         <p className="mt-3 text-center text-base text-muted-foreground">{t("hc.phone")} — {t("hc.hours")}</p>
       </section>
-      <span className="sr-only" dir={dir} />
     </div>
   );
 }
