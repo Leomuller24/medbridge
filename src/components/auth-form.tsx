@@ -10,6 +10,7 @@ import { useSession } from "@/hooks/use-session";
 import { lovable } from "@/integrations/lovable/index";
 import { supabase } from "@/integrations/supabase/client";
 import { setStoredRole } from "@/lib/role";
+import { authRedirectUrl } from "@/lib/site-url";
 
 type AuthFormProps = {
   mode: "login" | "register";
@@ -34,6 +35,18 @@ export function AuthForm({ mode }: AuthFormProps) {
   const [busy, setBusy] = useState(false);
   const [accountRole, setAccountRole] = useState<"provider" | "patient" | null>(null);
   const [challenge, setChallenge] = useState<{ a: number; b: number; start: number } | null>(null);
+  const [sentTo, setSentTo] = useState<string | null>(null);
+  const [cooldownUntil, setCooldownUntil] = useState(0);
+  const [resending, setResending] = useState(false);
+  const [now, setNow] = useState(() => Date.now());
+  const secondsLeft = Math.max(0, Math.ceil((cooldownUntil - now) / 1000));
+
+  useEffect(() => {
+    if (cooldownUntil <= Date.now()) return;
+    setNow(Date.now());
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [cooldownUntil]);
 
   useEffect(() => {
     if (!session) return;
@@ -84,12 +97,15 @@ export function AuthForm({ mode }: AuthFormProps) {
           email: d.email,
           password: d.password,
           options: {
-            emailRedirectTo: window.location.origin,
+            emailRedirectTo: authRedirectUrl(),
             data: isPatient ? { account_role: "patient" } : { display_name: d.name, role: d.role, account_role: "provider" },
           },
         });
         if (err) throw err;
-        if (!data.session) setNotice("Check your email and select the confirmation link to finish registering.");
+        if (!data.session) {
+          setSentTo(d.email);
+          setCooldownUntil(Date.now() + 60_000);
+        }
       } else {
         const { error: err } = await supabase.auth.signInWithPassword(parsed.data);
         if (err) throw err;
@@ -99,6 +115,16 @@ export function AuthForm({ mode }: AuthFormProps) {
     } finally {
       setBusy(false);
     }
+  }
+
+  async function handleResend() {
+    if (!sentTo || secondsLeft > 0) return;
+    setError(null);
+    setResending(true);
+    const { error: err } = await supabase.auth.resend({ type: "signup", email: sentTo, options: { emailRedirectTo: authRedirectUrl() } });
+    setResending(false);
+    if (err) setError(err.message);
+    setCooldownUntil(Date.now() + 60_000);
   }
 
   async function handleGoogle() {
@@ -179,6 +205,14 @@ export function AuthForm({ mode }: AuthFormProps) {
           )}
           {notice && (
             <p role="status" className="mt-4 rounded-lg bg-secondary px-4 py-3 text-sm text-secondary-foreground">{notice}</p>
+          )}
+          {sentTo && (
+            <div role="status" className="mt-4 space-y-3 rounded-lg bg-secondary px-4 py-3 text-sm text-secondary-foreground">
+              <p className="font-medium">Check your email to confirm your account. Look in your spam folder too.</p>
+              <Button type="button" variant="outline" size="sm" onClick={handleResend} disabled={secondsLeft > 0 || resending}>
+                {resending ? "Sending…" : secondsLeft > 0 ? `Send the email again (${secondsLeft}s)` : "Send the email again"}
+              </Button>
+            </div>
           )}
 
           <p className="mt-6 text-center text-sm text-muted-foreground">
