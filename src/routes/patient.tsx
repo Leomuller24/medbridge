@@ -1,5 +1,5 @@
-import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
-import { Check, ChevronDown, Globe, Phone, Repeat } from "lucide-react";
+import { createFileRoute, Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
+import { Check, ChevronDown, Globe, Languages, Phone, Repeat } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Logo } from "@/components/logo";
@@ -16,6 +16,7 @@ const LANG_KEY = "medbridge-patient-lang";
 
 function PatientLayout() {
   const navigate = useNavigate();
+  const pathname = useLocation({ select: (l) => l.pathname });
   const [lang, setLang] = useState<PatientLang>("en");
   useEffect(() => {
     setStoredRole("patient");
@@ -66,7 +67,7 @@ function PatientLayout() {
         <main className="mx-auto w-full max-w-3xl flex-1 px-5 pb-8 pt-4">
           <Outlet />
         </main>
-        <footer className="mx-auto w-full max-w-3xl px-5 pb-8">
+        <footer className="mx-auto w-full max-w-3xl px-5 pb-28">
           <div role="alert" className="flex items-center gap-3 rounded-[20px] border-2 border-destructive bg-destructive/10 p-5 text-lg font-semibold text-destructive">
             <Phone className="size-6 shrink-0" aria-hidden="true" /> {t("emergency")}
           </div>
@@ -74,6 +75,11 @@ function PatientLayout() {
           <p className="mt-1 text-center text-sm text-muted-foreground">{t("noData")}</p>
           {lang !== "en" && <p className="mt-2 text-center text-xs text-muted-foreground">{t("notChecked")}</p>}
         </footer>
+        {pathname !== "/patient/translate" && (
+          <Link to="/patient/translate" className="btn-primary fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] end-5 z-40 inline-flex min-h-14 items-center gap-2 px-5 text-base font-semibold shadow-lg">
+            <Languages className="size-5" aria-hidden="true" /> {t("topic.translate")}
+          </Link>
+        )}
       </div>
     </PatientLangContext.Provider>
   );

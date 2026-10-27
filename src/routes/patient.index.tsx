@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarCheck, Hospital, MessageCircleHeart, ShieldCheck, type LucideIcon } from "lucide-react";
+import { CalendarCheck, Languages, Hospital, MessageCircleHeart, ShieldCheck, type LucideIcon } from "lucide-react";
 
 import { useT, type PatientTopic } from "@/lib/patient-i18n";
 
@@ -20,6 +20,7 @@ export const Route = createFileRoute("/patient/")({
 const ITEMS: { topic: PatientTopic; icon: LucideIcon }[] = [
   { topic: "prepare", icon: CalendarCheck },
   { topic: "explain", icon: MessageCircleHeart },
+  { topic: "translate", icon: Languages },
   { topic: "healthcare", icon: Hospital },
   { topic: "rights", icon: ShieldCheck },
 ];
