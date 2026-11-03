@@ -142,8 +142,8 @@ function TranslatePage() {
 }
 
 // Small note addressed to the staff; kept in French and English so any team can read it.
-const INTERP_STAFF_NOTE_FR = "Les établissements de santé peuvent utiliser le service national d'interprétariat par téléphone, un service payant. Consultez 0842-442-442.ch pour les conditions et les prix actuels.";
-const INTERP_STAFF_NOTE_EN = "Healthcare institutions can use the national telephone interpreting service, a paid service. See 0842-442-442.ch for current conditions and prices.";
+const INTERP_STAFF_NOTE_FR = "Le personnel de santé du canton de Vaud peut réserver des interprètes communautaires auprès d'Appartenances (Intermedia : 021 341 12 47, intermedia@appartenances.ch) ou recourir au service national d'interprétariat par téléphone pour les urgences (0842-442-442.ch, payant). Consultez les sites web pour les conditions actuelles.";
+const INTERP_STAFF_NOTE_EN = "Healthcare staff in Vaud can book community interpreters through Appartenances (Intermedia: 021 341 12 47, intermedia@appartenances.ch) or the national telephone interpreting service for emergencies (0842-442-442.ch, paid). See the websites for current conditions.";
 
 function InterpCard({ onClose }: { onClose: () => void }) {
   const { t, lang } = useT();
