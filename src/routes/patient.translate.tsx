@@ -164,7 +164,7 @@ function InterpCard({ onClose }: { onClose: () => void }) {
     <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex flex-col bg-background pt-[calc(4.5rem+env(safe-area-inset-top))]">
       <div className="mx-auto flex w-full max-w-2xl px-5 py-4">
         <button type="button" onClick={onClose} className="inline-flex min-h-12 items-center gap-2 rounded-full border border-border bg-card px-5 text-base font-semibold text-foreground">
-          <X className="size-5" aria-hidden="true" /> {t("close")}
+          <X className="size-5" aria-hidden="true" /> <span lang="fr">Fermer</span>{lang !== "fr" && <span> · {t("close")}</span>}
         </button>
       </div>
       <div className="flex flex-1 items-center justify-center overflow-y-auto px-5 pb-6">
