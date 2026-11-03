@@ -20,6 +20,7 @@ export function useSaveProfile() {
   return async (values: {
     display_name?: string;
     role?: string;
+    institution?: string;
     interests?: string[];
     languages?: string[];
     onboarded?: boolean;
