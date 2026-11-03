@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarCheck, Languages, Hospital, MessageCircleHeart, ShieldCheck, type LucideIcon } from "lucide-react";
+import { CalendarCheck, CalendarDays, Languages, Hospital, MessageCircleHeart, ShieldCheck, type LucideIcon } from "lucide-react";
 
+import { PatientAppointmentReminder } from "@/components/patient-appointment-reminder";
 import { useT, type PatientTopic } from "@/lib/patient-i18n";
 
 export const Route = createFileRoute("/patient/")({
