@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 import { PatientBack } from "@/components/patient-back";
 import { useT } from "@/lib/patient-i18n";
-import { LANGUAGE_INFO, translate as patientTranslate } from "@/lib/patient-translations";
+import { LANGUAGE_INFO, translate as patientTranslate, type PatientLang } from "@/lib/patient-translations";
 import { translateText } from "@/lib/translate.functions";
 
 
@@ -145,9 +145,13 @@ function TranslatePage() {
 const INTERP_STAFF_NOTE_FR = "Le personnel soignant vaudois peut réserver des interprètes communautaires via Appartenances (Intermedia : 021 341 12 47, intermedia@appartenances.ch) ou le service national d'interprétariat téléphonique pour les urgences (0842-442-442.ch, payant). Voir les sites pour les conditions actuelles.";
 const INTERP_STAFF_NOTE_EN = "Healthcare staff in Vaud can book community interpreters through Appartenances (Intermedia: 021 341 12 47, intermedia@appartenances.ch) or the national telephone interpreting service for emergencies (0842-442-442.ch, paid). See the websites for current conditions.";
 
+// Patient language written in French, for the staff view.
+const LANG_NAME_FR: Record<PatientLang, string> = {
+  fr: "français", en: "anglais", ar: "arabe", ti: "tigrinya", prs: "dari", ps: "pachto", so: "somali", tr: "turc", uk: "ukrainien",
+};
+
 function InterpCard({ onClose }: { onClose: () => void }) {
   const { t, lang } = useT();
-  const subLang = lang === "fr" ? "en" : "fr";
   const translated = lang !== "en" && lang !== "fr";
 
   useEffect(() => {
@@ -160,19 +164,18 @@ function InterpCard({ onClose }: { onClose: () => void }) {
     <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex flex-col bg-background pt-[calc(4.5rem+env(safe-area-inset-top))]">
       <div className="mx-auto flex w-full max-w-2xl px-5 py-4">
         <button type="button" onClick={onClose} className="inline-flex min-h-12 items-center gap-2 rounded-full border border-border bg-card px-5 text-base font-semibold text-foreground">
-          <X className="size-5" aria-hidden="true" /> {t("close")}
+          <X className="size-5" aria-hidden="true" /> <span lang="fr">Fermer</span>{lang !== "fr" && <span> · {t("close")}</span>}
         </button>
       </div>
       <div className="flex flex-1 items-center justify-center overflow-y-auto px-5 pb-6">
-        <div className="card w-full max-w-2xl p-8 text-center">
-          <p className="text-sm font-semibold uppercase tracking-wide text-primary">{t("tr.askInterp")}</p>
-          <p className="mt-6 text-3xl font-bold leading-snug text-foreground sm:text-4xl">{t("interp.text")}</p>
-          <p lang={subLang} dir="ltr" className="mt-5 text-xl text-muted-foreground">{patientTranslate("interp.text", subLang)}</p>
-          {translated && <p className="mt-4 text-xs text-muted-foreground">{t("notChecked")}</p>}
-          <div dir="ltr" className="mt-6 space-y-1 text-xs leading-relaxed text-muted-foreground">
-            <p>{INTERP_STAFF_NOTE_FR}</p>
-            <p>{INTERP_STAFF_NOTE_EN}</p>
-          </div>
+        <div dir="ltr" className="card w-full max-w-2xl p-8 text-center">
+          <p lang="fr" className="text-3xl font-bold leading-snug text-foreground sm:text-4xl">{patientTranslate("interp.request", "fr")}</p>
+          <p lang="fr" className="mt-6 text-2xl font-semibold text-primary">Langue : {LANG_NAME_FR[lang]}</p>
+          {lang !== "fr" && (
+            <p lang={lang} dir={LANGUAGE_INFO[lang].dir} className="mt-6 text-xl leading-relaxed text-muted-foreground">{t("interp.request")}</p>
+          )}
+          {translated && <p className="mt-3 text-xs text-muted-foreground">{t("notChecked")}</p>}
+          <p lang="fr" className="mt-8 text-xs leading-relaxed text-muted-foreground">{INTERP_STAFF_NOTE_FR}</p>
         </div>
       </div>
     </div>
