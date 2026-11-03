@@ -2,6 +2,7 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { Check, ShieldAlert, Trash2, TriangleAlert } from "lucide-react";
 import { toast } from "sonner";
 
+import { AdminAccounts } from "@/components/admin-accounts";
 import { PageShell, formatDate } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -60,7 +61,9 @@ function AdminPage() {
   }
 
   return (
-    <PageShell eyebrow="Admin" title="Reported items">
+    <PageShell eyebrow="Admin" title="Accounts and reports">
+      <AdminAccounts />
+      <h2 className="mt-10 mb-3 text-lg font-semibold text-navy">Reported items</h2>
       <div className="space-y-4">
         {isLoading && <p className="card text-sm text-muted-foreground">Loading…</p>}
         {!isLoading && items.length === 0 && <p className="card text-sm text-muted-foreground">No reported posts or comments.</p>}

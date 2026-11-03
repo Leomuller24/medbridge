@@ -306,7 +306,7 @@ function Faq() {
           <h2 className="mt-3 text-4xl font-bold text-foreground">Questions, answered</h2>
           <div className={`${card} mt-8 flex gap-4 bg-soft p-6`}>
             <span className={`${iconWrap} bg-card text-teal`}><ShieldCheck aria-hidden="true" className="size-5" /></span>
-            <p className="text-sm font-medium leading-6 text-foreground">MedBridge does not store patient data. Provider accounts, community posts and votes are stored on a server. Patient pages store nothing and collect no personal data.</p>
+            <p className="text-sm font-medium leading-6 text-foreground">MedBridge does not store patient data. Provider accounts, community posts and votes are stored on a server. Patient pages store nothing and collect no personal data. Reported posts may be reviewed by an automated system.</p>
           </div>
         </Reveal>
         <Reveal delay={100}>

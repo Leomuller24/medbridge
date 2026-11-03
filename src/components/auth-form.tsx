@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { BriefcaseMedical, Check, LockKeyhole, Mail, UserRound } from "lucide-react";
+import { Building2, BriefcaseMedical, Check, LockKeyhole, Mail, UserRound } from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
 import { z } from "zod";
 
@@ -20,10 +20,10 @@ const credentials = z.object({
   email: z.string().trim().email("Enter a valid email address.").max(254),
   password: z.string().min(8, "Password must be at least 8 characters.").max(128),
 });
-const patientRegistration = credentials;
 const registration = credentials.extend({
   name: z.string().trim().min(1, "Enter your name.").max(100),
-  role: z.string().trim().min(1, "Enter your role.").max(60),
+  role: z.string().trim().min(1, "Enter your profession.").max(60),
+  institution: z.string().trim().min(1, "Enter your institution.").max(120),
 });
 
 export function AuthForm({ mode }: AuthFormProps) {
@@ -33,7 +33,6 @@ export function AuthForm({ mode }: AuthFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [accountRole, setAccountRole] = useState<"provider" | "patient" | null>(null);
   const [challenge, setChallenge] = useState<{ a: number; b: number; start: number } | null>(null);
   const [sentTo, setSentTo] = useState<string | null>(null);
   const [cooldownUntil, setCooldownUntil] = useState(0);
@@ -52,12 +51,10 @@ export function AuthForm({ mode }: AuthFormProps) {
     if (!session) return;
     let cancelled = false;
     (async () => {
-      const { data } = await supabase.from("profiles").select("account_role").eq("id", session.user.id).maybeSingle();
       if (cancelled) return;
-      // Users without a saved role are treated as providers.
-      const role = data?.account_role === "patient" ? "patient" : "provider";
-      setStoredRole(role);
-      navigate({ to: role === "patient" ? "/patient" : "/dashboard", replace: true });
+      // Only healthcare providers have accounts.
+      setStoredRole("provider");
+      navigate({ to: "/dashboard", replace: true });
     })();
     return () => { cancelled = true; };
   }, [session, navigate]);
@@ -71,12 +68,7 @@ export function AuthForm({ mode }: AuthFormProps) {
     setError(null);
     setNotice(null);
     const form = Object.fromEntries(new FormData(event.currentTarget));
-    if (isRegister && !accountRole) {
-      setError("Please choose whether you are a healthcare provider or a patient.");
-      return;
-    }
-    const isPatient = isRegister && accountRole === "patient";
-    const parsed = (isRegister ? (isPatient ? patientRegistration : registration) : credentials).safeParse(form);
+    const parsed = (isRegister ? registration : credentials).safeParse(form);
     if (!parsed.success) {
       setError(parsed.error.issues[0]?.message ?? "Please check your details.");
       return;
@@ -98,7 +90,7 @@ export function AuthForm({ mode }: AuthFormProps) {
           password: d.password,
           options: {
             emailRedirectTo: authRedirectUrl(),
-            data: isPatient ? { account_role: "patient" } : { display_name: d.name, role: d.role, account_role: "provider" },
+            data: { display_name: d.name, role: d.role, institution: d.institution },
           },
         });
         if (err) throw err;
@@ -142,7 +134,7 @@ export function AuthForm({ mode }: AuthFormProps) {
             {isRegister ? "Register for MedBridge" : "Log in to MedBridge"}
           </h1>
           <p className="mt-3 text-sm leading-6 text-muted-foreground">
-            {isRegister ? "Create your account to access Notes, Community and Settings." : "Sign in to access Notes, Community and Settings."}
+            {isRegister ? "For healthcare providers only. Patients do not need an account." : "Sign in to access Notes, Community and Settings."}
           </p>
 
           <Button type="button" variant="outline" size="lg" className="mt-8 w-full" onClick={handleGoogle}>
@@ -154,22 +146,11 @@ export function AuthForm({ mode }: AuthFormProps) {
 
           <form className="space-y-5" onSubmit={handleSubmit} noValidate>
             {isRegister && (
-              <fieldset className="space-y-2">
-                <legend className="text-sm font-medium text-foreground">I am… <span className="text-destructive">*</span></legend>
-                <div className="grid gap-3 sm:grid-cols-2" role="radiogroup" aria-required="true">
-                  {([["provider", "I am a healthcare provider"], ["patient", "I am a patient"]] as const).map(([value, label]) => (
-                    <label key={value} className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-2xl border px-4 text-sm font-medium ${accountRole === value ? "border-primary bg-accent text-foreground" : "border-border text-muted-foreground"}`}>
-                      <input type="radio" name="account_role" value={value} required checked={accountRole === value} onChange={() => setAccountRole(value)} className="accent-[var(--primary)]" />
-                      {label}
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
-            )}
-            {isRegister && accountRole !== "patient" && (
               <>
                 <Field id="register-name" name="name" label="Full name" icon={UserRound} autoComplete="name" placeholder="Dr. Anna Keller" maxLength={100} />
                 <Field id="register-role" name="role" label="Profession" icon={BriefcaseMedical} autoComplete="organization-title" placeholder="e.g. Nurse, General practitioner" maxLength={60} />
+                <Field id="register-institution" name="institution" label="Institution" icon={Building2} autoComplete="organization" placeholder="e.g. Inselspital Bern" maxLength={120} />
+                <p className="rounded-2xl bg-accent px-4 py-3 text-sm text-primary">Your account will be checked before you can post.</p>
               </>
             )}
             <Field id={`${mode}-email`} name="email" type="email" label="Email address" icon={Mail} autoComplete="email" placeholder="name@clinic.ch" maxLength={254} />

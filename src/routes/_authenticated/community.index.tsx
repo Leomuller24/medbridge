@@ -6,6 +6,7 @@ import { PageShell, formatDate } from "@/components/page-shell";
 import { Input } from "@/components/ui/input";
 import { ReportButton } from "@/components/report-button";
 import { useCommunity } from "@/lib/community";
+import { PendingNotice } from "@/components/pending-notice";
 import { useIsModerator } from "@/lib/moderation-data";
 import { useStore } from "@/lib/local-store";
 import { COMMUNITY_CATEGORIES } from "@/lib/medbridge-data";
@@ -51,6 +52,7 @@ function CommunityPage() {
     <PageShell eyebrow="Community" title="Learn from colleagues">
       <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
         <div>
+          <PendingNotice />
           {/* Pinned start here */}
           <section className="card relative overflow-hidden border-primary/30 bg-accent">
             <div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-16 size-48 rounded-full bg-aqua/20 blur-3xl" />

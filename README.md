@@ -5,3 +5,5 @@ MedBridge is an informational tool that gives healthcare providers cultural and 
 The Translate tool sends the text you enter to a translation service. Nothing is saved. Do not write your name or personal details.
 
 Provider accounts, community posts and votes are stored on a server. Patient pages store nothing and collect no personal data.
+
+Reported posts may be reviewed by an automated system.
