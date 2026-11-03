@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useProfile, useSaveProfile } from "@/hooks/use-profile";
-import { updateStore, useStore } from "@/lib/local-store";
+import { updateStore } from "@/lib/local-store";
 import { useMyStats } from "@/lib/community";
 import { Award, Flame, Star } from "lucide-react";
 import { LANGUAGES, ROLES } from "@/lib/medbridge-data";
