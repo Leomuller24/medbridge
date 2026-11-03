@@ -36,6 +36,7 @@ function TranslatePage() {
   const [busy, setBusy] = useState(false);
   const [staffCard, setStaffCard] = useState(false);
   const subLang = lang === "fr" ? "en" : "fr";
+  const translated = lang !== "en" && lang !== "fr";
 
   const target = direction === "toMe" ? lang : "fr";
   const targetDir = LANGUAGE_INFO[target].dir;
@@ -129,7 +130,11 @@ function TranslatePage() {
         <button type="button" onClick={() => setStaffCard(true)} className="btn-primary mt-4 inline-flex min-h-14 w-full items-center justify-center gap-2 text-lg font-semibold">
           <Languages className="size-5" aria-hidden="true" /> {t("interp.showStaff")}
         </button>
-        <p className="mt-4 text-xs leading-relaxed text-muted-foreground">{INTERP_STAFF_NOTE}</p>
+        {translated && <p className="mt-3 text-xs text-muted-foreground">{t("notChecked")}</p>}
+        <div dir="ltr" className="mt-4 space-y-1 text-xs leading-relaxed text-muted-foreground">
+          <p>{INTERP_STAFF_NOTE_FR}</p>
+          <p>{INTERP_STAFF_NOTE_EN}</p>
+        </div>
       </section>
     </div>
   );
