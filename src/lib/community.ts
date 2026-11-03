@@ -114,8 +114,7 @@ export async function createAnswer(postId: string, parentId: string | null, body
 export async function setHelpful(kind: "post" | "comment", id: string, on: boolean) {
   const voter_id = await myId();
   const col = kind === "post" ? "post_id" : "answer_id";
-  const row = kind === "post" ? { voter_id, post_id: id } : { voter_id, answer_id: id };
-  if (on) fail((await supabase.from("community_votes").insert(row)).error);
+  if (on) fail((await supabase.from("community_votes").insert(kind === "post" ? { voter_id, post_id: id, answer_id: null } : { voter_id, post_id: null, answer_id: id })).error);
   else fail((await supabase.from("community_votes").delete().eq("voter_id", voter_id).eq(col, id)).error);
 }
 
