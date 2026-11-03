@@ -137,3 +137,17 @@ export function findItem(posts: Post[], id: string): { kind: "post" | "comment";
   }
   return undefined;
 }
+
+/** Whether the signed-in account is an approved provider (checked by the backend from the roles table). */
+export function useCanPost() {
+  return useQuery({
+    queryKey: ["community", "can-post"],
+    queryFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return false;
+      const { data } = await supabase.rpc("is_provider", { _user_id: u.user.id });
+      return data === true;
+    },
+    staleTime: 60_000,
+  });
+}
