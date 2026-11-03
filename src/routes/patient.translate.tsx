@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowDownUp, Eraser, Languages, Phone, ShieldAlert, ShieldCheck } from "lucide-react";
-import { useState } from "react";
+import { ArrowDownUp, Eraser, Languages, ShieldAlert, ShieldCheck, X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import { PatientBack } from "@/components/patient-back";
-import { useT } from "@/lib/patient-i18n";
-import { LANGUAGE_INFO } from "@/lib/patient-translations";
+import { useT, type PatientKey } from "@/lib/patient-i18n";
+import { LANGUAGE_INFO, translate as patientTranslate } from "@/lib/patient-translations";
 import { translateText } from "@/lib/translate.functions";
+
 
 export const Route = createFileRoute("/patient/translate")({
   head: () => ({
