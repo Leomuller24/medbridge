@@ -31,3 +31,5 @@
 - [x] Moderator-only moderation page (hide/restore reported items)
 - [x] Export own posts + delete own account and content
 - [x] README, privacy page, footer: server storage sentence
+- [ ] AI moderator: only hide/flag, never delete; human can reverse; explain text sent, storage, cost
+- [ ] Privacy page + README: "Reported posts may be reviewed by an automated system."
