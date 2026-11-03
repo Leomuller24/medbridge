@@ -93,7 +93,7 @@ function SettingsPage() {
         <section className={cardClass}>
           <h2 className="text-lg font-semibold text-card-foreground">Privacy</h2>
           <p className="mt-2 text-sm font-medium text-foreground">MedBridge does not store patient data.</p>
-          <p className="mt-1 text-sm text-muted-foreground">Cases and notes are kept only in this browser. Your account stores just your name, role, email and preferences.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Cases and notes are kept only in this browser. Your account stores your name, role, email, preferences and anything you share in the Community.</p>
           <Button variant="outline" className="mt-5" onClick={() => { if (confirm("Remove all cases and notes from this browser?")) { updateStore((s) => ({ ...s, cases: [], notes: [] })); toast.success("Cleared from this browser"); } }}>
             Clear cases and notes from this browser
           </Button>
