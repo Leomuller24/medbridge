@@ -4,7 +4,7 @@ import { ArrowDownUp, Eraser, Languages, ShieldAlert, ShieldCheck, X } from "luc
 import { useEffect, useState } from "react";
 
 import { PatientBack } from "@/components/patient-back";
-import { useT, type PatientKey } from "@/lib/patient-i18n";
+import { useT } from "@/lib/patient-i18n";
 import { LANGUAGE_INFO, translate as patientTranslate } from "@/lib/patient-translations";
 import { translateText } from "@/lib/translate.functions";
 
@@ -34,6 +34,8 @@ function TranslatePage() {
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [staffCard, setStaffCard] = useState(false);
+  const subLang = lang === "fr" ? "en" : "fr";
 
   const target = direction === "toMe" ? lang : "fr";
   const targetDir = LANGUAGE_INFO[target].dir;
