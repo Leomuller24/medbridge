@@ -359,6 +359,7 @@ export type Database = {
         }[]
       }
       community_first_helpful: { Args: { _post_id: string }; Returns: string }
+      community_level: { Args: { _points: number }; Returns: string }
       community_my_stats: {
         Args: never
         Returns: {
