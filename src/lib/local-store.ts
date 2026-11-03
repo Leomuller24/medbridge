@@ -1,13 +1,12 @@
 import { useCallback, useSyncExternalStore } from "react";
 
-import { type CaseRecord, type NoteRecord, type Post, SEED_CASES, SEED_NOTES, SEED_POSTS } from "./medbridge-data";
-import type { Activity } from "./posting-rules";
-import type { ModLogEntry, Warning } from "./reports";
+import { type CaseRecord, type NoteRecord, SEED_CASES, SEED_NOTES } from "./medbridge-data";
 
-// Everything here lives only in the user's browser; nothing is sent to a server.
-type Store = { cases: CaseRecord[]; notes: NoteRecord[]; posts: Post[]; helpful: string[]; activity: Activity[]; reported: string[]; modLog: ModLogEntry[]; warnings: Warning[] };
+// Cases and notes live only in the user's browser; nothing here is sent to a server.
+// Community content lives in the backend (see src/lib/community.ts).
+type Store = { cases: CaseRecord[]; notes: NoteRecord[] };
 const KEY = "medbridge-local-v1";
-const seed: Store = { cases: SEED_CASES, notes: SEED_NOTES, posts: SEED_POSTS, helpful: [], activity: [], reported: [], modLog: [], warnings: [] };
+const seed: Store = { cases: SEED_CASES, notes: SEED_NOTES };
 
 let cache: Store | null = null;
 const listeners = new Set<() => void>();
@@ -17,7 +16,12 @@ function read(): Store {
   if (typeof window === "undefined") return seed;
   try {
     const raw = window.localStorage.getItem(KEY);
-    cache = raw ? { ...seed, ...(JSON.parse(raw) as Store) } : seed;
+    const parsed = raw ? (JSON.parse(raw) as Partial<Store> & Record<string, unknown>) : null;
+    cache = { cases: parsed?.cases ?? seed.cases, notes: parsed?.notes ?? seed.notes };
+    // Drop community data left over from the browser-only version.
+    if (parsed && ["posts", "helpful", "activity", "reported", "modLog", "warnings"].some((k) => k in parsed)) {
+      window.localStorage.setItem(KEY, JSON.stringify(cache));
+    }
   } catch {
     cache = seed;
   }
