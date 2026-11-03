@@ -38,11 +38,15 @@ export function AdminAccounts() {
   const pending = accounts.filter((a) => a.roles.includes("pending_provider"));
   const others = accounts.filter((a) => !a.roles.includes("pending_provider"));
 
+  const domain = (email: string) => (email.includes("@") ? email.split("@").pop() : "unknown");
   const who = (a: (typeof accounts)[number]) => (
-    <>
-      <p className="font-semibold text-navy">{a.display_name || "No name"} <span className="text-sm font-normal text-muted-foreground">· {a.email}</span></p>
-      <p className="text-xs text-muted-foreground">{a.profession || "No profession given"} · {a.institution || "No institution given"} · joined {formatDate(a.created_at)}</p>
-    </>
+    <dl className="grid gap-x-6 gap-y-1 text-sm sm:grid-cols-[auto_1fr]">
+      <dt className="text-muted-foreground">Name</dt><dd className="font-semibold text-navy">{a.display_name || "No name"}</dd>
+      <dt className="text-muted-foreground">Profession</dt><dd className="text-navy">{a.profession || "Not given"}</dd>
+      <dt className="text-muted-foreground">Institution</dt><dd className="text-navy">{a.institution || "Not given"}</dd>
+      <dt className="text-muted-foreground">Email domain</dt><dd className="text-navy">@{domain(a.email)}</dd>
+      <dt className="text-muted-foreground">Signed up</dt><dd className="text-navy">{formatDate(a.created_at)}</dd>
+    </dl>
   );
 
   return (
