@@ -31,6 +31,6 @@
 - [x] Moderator-only moderation page (hide/restore reported items)
 - [x] Export own posts + delete own account and content
 - [x] README, privacy page, footer: server storage sentence
-- [ ] AI moderator: only hide/flag, never delete; human can reverse; explain text sent, storage, cost
-- [ ] Privacy page + README: "Reported posts may be reviewed by an automated system."
-- [ ] Patient side audit: translate notice in all languages, no sign-in, no community, no server storage
+- [x] AI moderator: only hide/flag, never delete; human can reverse; explain text sent, storage, cost
+- [x] Privacy page + README: "Reported posts may be reviewed by an automated system."
+- [x] Patient side audit: translate notice in all languages, no sign-in, no community, no server storage
