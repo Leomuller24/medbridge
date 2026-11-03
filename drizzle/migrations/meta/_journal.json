@@ -64,6 +64,13 @@
       "when": 1793726265006,
       "tag": "0008_community_refuse_new_voters",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793726510423,
+      "tag": "0009_app_role_provider_values",
+      "breakpoints": true
     }
   ]
 }
