@@ -71,6 +71,13 @@
       "when": 1793726510423,
       "tag": "0009_app_role_provider_values",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1793726542015,
+      "tag": "0010_provider_approval",
+      "breakpoints": true
     }
   ]
 }
