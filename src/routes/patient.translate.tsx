@@ -136,12 +136,14 @@ function TranslatePage() {
           <p>{INTERP_STAFF_NOTE_EN}</p>
         </div>
       </section>
+      {staffCard && <InterpCard onClose={() => setStaffCard(false)} />}
     </div>
   );
 }
 
-// Small note addressed to the staff; kept in English so any team can read it.
-const INTERP_STAFF_NOTE = "Healthcare institutions can register for the national telephone interpreting service. See 0842-442-442.ch for the current conditions.";
+// Small note addressed to the staff; kept in French and English so any team can read it.
+const INTERP_STAFF_NOTE_FR = "Les établissements de santé peuvent utiliser le service national d'interprétariat par téléphone, un service payant. Consultez 0842-442-442.ch pour les conditions et les prix actuels.";
+const INTERP_STAFF_NOTE_EN = "Healthcare institutions can use the national telephone interpreting service, a paid service. See 0842-442-442.ch for current conditions and prices.";
 
 function InterpCard({ onClose }: { onClose: () => void }) {
   const { t, lang } = useT();
