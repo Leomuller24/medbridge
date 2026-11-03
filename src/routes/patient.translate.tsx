@@ -169,7 +169,10 @@ function InterpCard({ onClose }: { onClose: () => void }) {
           <p className="mt-6 text-3xl font-bold leading-snug text-foreground sm:text-4xl">{t("interp.text")}</p>
           <p lang={subLang} dir="ltr" className="mt-5 text-xl text-muted-foreground">{patientTranslate("interp.text", subLang)}</p>
           {translated && <p className="mt-4 text-xs text-muted-foreground">{t("notChecked")}</p>}
-          <p className="mt-6 text-xs leading-relaxed text-muted-foreground">{INTERP_STAFF_NOTE}</p>
+          <div dir="ltr" className="mt-6 space-y-1 text-xs leading-relaxed text-muted-foreground">
+            <p>{INTERP_STAFF_NOTE_FR}</p>
+            <p>{INTERP_STAFF_NOTE_EN}</p>
+          </div>
         </div>
       </div>
     </div>

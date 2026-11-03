@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ExternalLink, Hospital, Languages, Phone, Pill, Stethoscope, type LucideIcon } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ExternalLink, Hospital, Languages, Pill, Stethoscope, type LucideIcon } from "lucide-react";
 
 import { PatientBack } from "@/components/patient-back";
 import { useT, type PatientKey } from "@/lib/patient-i18n";
@@ -22,7 +22,6 @@ const STEPS: { icon: LucideIcon; title: PatientKey; text: PatientKey }[] = [
   { icon: Stethoscope, title: "hc.doctor", text: "hc.doctorText" },
   { icon: Pill, title: "hc.pharmacy", text: "hc.pharmacyText" },
   { icon: Hospital, title: "hc.er", text: "hc.erText" },
-  { icon: Languages, title: "hc.interp", text: "hc.interpText" },
 ];
 
 function Healthcare() {
