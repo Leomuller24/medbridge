@@ -6,7 +6,7 @@ import { PageShell, formatDate } from "@/components/page-shell";
 import { Input } from "@/components/ui/input";
 import { ReportButton } from "@/components/report-button";
 import { useCommunity } from "@/lib/community";
-import { PendingNotice } from "@/components/pending-notice";
+import { PendingNotice, ProviderGate } from "@/components/pending-notice";
 import { useIsModerator } from "@/lib/moderation-data";
 import { useStore } from "@/lib/local-store";
 import { COMMUNITY_CATEGORIES } from "@/lib/medbridge-data";
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_authenticated/community/")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: CommunityPage,
+  component: () => <ProviderGate><CommunityPage /></ProviderGate>,
 });
 
 

@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
 import { ReportButton } from "@/components/report-button";
-import { PendingNotice } from "@/components/pending-notice";
+import { PendingNotice, ProviderGate } from "@/components/pending-notice";
 import { createAnswer, setHelpful, useCanPost, useCommunity, useRefreshCommunity } from "@/lib/community";
 import type { Reply } from "@/lib/medbridge-data";
 import { findPii, piiWarning } from "@/lib/pii";
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/_authenticated/community/$postId")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: Thread,
+  component: () => <ProviderGate><Thread /></ProviderGate>,
 });
 
 function Thread() {
