@@ -27,9 +27,12 @@ export async function toggleHelpful(postId: string, author: string, replyId?: st
     posts: st.posts.map((p) => {
       if (p.id !== postId) return p;
       if (!replyId) return { ...p, helpful: Math.max(0, p.helpful + d) };
+      const replies = bump(p.replies, replyId, d);
       const isAnswer = p.replies.some((r) => r.id === replyId);
-      const bonusReplyId = !marked && isAnswer && !p.bonusReplyId ? replyId : p.bonusReplyId;
-      return { ...p, bonusReplyId, replies: bump(p.replies, replyId, d) };
+      let bonusReplyId = !marked && isAnswer && !p.bonusReplyId ? replyId : p.bonusReplyId;
+      // Bonus is lost when the first helpful answer drops back to zero votes.
+      if (marked && bonusReplyId === replyId && (replies.find((r) => r.id === replyId)?.helpful ?? 0) === 0) bonusReplyId = undefined;
+      return { ...p, bonusReplyId, replies };
     }),
   }));
 }
