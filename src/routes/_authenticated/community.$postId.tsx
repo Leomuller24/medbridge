@@ -7,15 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
-import { supabase } from "@/integrations/supabase/client";
-import { newId, updateStore, useStore } from "@/lib/local-store";
-import { findPii, piiWarning } from "@/lib/pii";
-import { checkPosting } from "@/lib/posting-rules";
-import { addReport, reportReply } from "@/lib/reports";
 import { ReportButton } from "@/components/report-button";
+import { createAnswer, setHelpful, useCommunity, useRefreshCommunity } from "@/lib/community";
 import type { Reply } from "@/lib/medbridge-data";
-import { pointsByAuthor } from "@/lib/reputation";
-import { toggleHelpful } from "@/lib/votes";
+import { findPii, piiWarning } from "@/lib/pii";
 
 export const Route = createFileRoute("/_authenticated/community/$postId")({
   head: () => ({
@@ -31,47 +26,57 @@ export const Route = createFileRoute("/_authenticated/community/$postId")({
   component: Thread,
 });
 
-function addReply(list: Reply[], parentId: string | null, reply: Reply): Reply[] {
-  if (!parentId) return [...list, reply];
-  return list.map((r) => (r.id === parentId ? { ...r, replies: [...(r.replies ?? []), reply] } : { ...r, replies: addReply(r.replies ?? [], parentId, reply) }));
-}
-
 function Thread() {
   const { postId } = Route.useParams();
-  const { posts, helpful, activity } = useStore();
-  const post = posts.find((p) => p.id === postId);
+  const { data, isLoading } = useCommunity();
+  const refresh = useRefreshCommunity();
+  const post = data?.posts.find((p) => p.id === postId);
   const [text, setText] = useState("");
   const [replyTo, setReplyTo] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
   const back = <Link to="/community" className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"><ArrowLeft className="size-4" /> Back to feed</Link>;
-  if (!post || post.hidden) return <PageShell title="Post not found">{back}</PageShell>;
-  const marked = helpful.includes(post.id);
+  if (isLoading) return <PageShell title="Loading…">{back}</PageShell>;
+  if (!post || post.status === "hidden") return <PageShell title="Post not found">{back}</PageShell>;
 
-  const points = pointsByAuthor(posts);
-  const by = (a: string) => <>{a} · <span className="font-medium text-primary">{points[a] ?? 0} pts</span></>;
+  const points = data?.points ?? {};
+  const by = (name: string, id: string) => <>{name} · <span className="font-medium text-primary">{points[id] ?? 0} pts</span></>;
+
+  async function vote(kind: "post" | "comment", id: string, on: boolean) {
+    try {
+      await setHelpful(kind, id, on);
+      await refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not save your vote.");
+    }
+  }
 
   async function submit() {
     const t = text.trim().slice(0, 2000);
     if (!t) return;
     const hits = findPii(t);
     if (hits.length) return void toast.warning(piiWarning(hits));
-    const { data } = await supabase.auth.getUser();
-    const blocked = checkPosting(data.user, "comment", t, activity);
-    if (blocked) return void toast.error(blocked);
-    const reply: Reply = { id: newId(), author: "You", text: t, createdAt: new Date().toISOString() };
-    updateStore((s) => ({ ...s, activity: [...s.activity, { type: "comment", at: reply.createdAt }], posts: s.posts.map((p) => (p.id === postId ? { ...p, replies: addReply(p.replies, replyTo, reply) } : p)) }));
-    setText("");
-    setReplyTo(null);
+    setBusy(true);
+    try {
+      await createAnswer(postId, replyTo, t);
+      setText("");
+      setReplyTo(null);
+      await refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not post your reply.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   const renderReplies = (list: Reply[], depth = 0) => (
     <ul className={depth ? "mt-3 space-y-3 border-l border-border pl-5" : "space-y-4"}>
-      {list.filter((r) => !r.hidden).map((r) => (
+      {list.filter((r) => r.status !== "hidden").map((r) => (
         <li key={r.id}>
-          <p className="text-xs text-muted-foreground">{by(r.author)} · {formatDate(r.createdAt)}{r.id === post.bonusReplyId && <span className="ml-2 rounded-full bg-accent px-2 py-0.5 font-medium text-primary">First helpful answer +2</span>}</p>
+          <p className="text-xs text-muted-foreground">{by(r.author, r.authorId)} · {formatDate(r.createdAt)}{r.id === post.bonusReplyId && <span className="ml-2 rounded-full bg-accent px-2 py-0.5 font-medium text-primary">First helpful answer +2</span>}</p>
           <p className="mt-1 text-sm text-foreground">{r.text}</p>
-          <div className="flex items-center gap-3"><button type="button" aria-pressed={helpful.includes(r.id)} onClick={() => toggleHelpful(postId, r.author, r.id)} className={`inline-flex items-center gap-1 text-xs font-medium ${helpful.includes(r.id) ? "text-primary" : "text-muted-foreground hover:text-primary"}`}><ThumbsUp aria-hidden="true" className="size-3.5" /> Helpful · {r.helpful ?? 0}</button><Button variant="link" className="h-auto p-0 text-xs" onClick={() => setReplyTo(r.id)}>Reply</Button><ReportButton targetId={r.id} label="comment" onReport={(rep) => updateStore((s) => ({ ...s, posts: s.posts.map((p) => (p.id === postId ? { ...p, replies: reportReply(p.replies, r.id, rep) } : p)) }))} /></div>
-          {r.replies?.length ? renderReplies(r.replies, depth + 1) : null}
+          <div className="flex items-center gap-3"><button type="button" aria-pressed={r.votedByMe} onClick={() => vote("comment", r.id, !r.votedByMe)} className={`inline-flex items-center gap-1 text-xs font-medium ${r.votedByMe ? "text-primary" : "text-muted-foreground hover:text-primary"}`}><ThumbsUp aria-hidden="true" className="size-3.5" /> Helpful · {r.helpful ?? 0}</button><Button variant="link" className="h-auto p-0 text-xs" onClick={() => setReplyTo(r.id)}>Reply</Button><ReportButton kind="comment" targetId={r.id} label="comment" reported={r.reportedByMe} /></div>
+          {r.replies.length ? renderReplies(r.replies, depth + 1) : null}
         </li>
       ))}
     </ul>
@@ -81,14 +86,14 @@ function Thread() {
     <PageShell eyebrow={post.category} title={post.title}>
       {back}
       <article className={`${cardClass} mt-6`}>
-        <p className="text-xs text-muted-foreground">{by(post.author)} · {formatDate(post.createdAt)}</p>
+        <p className="text-xs text-muted-foreground">{by(post.author, post.authorId)} · {formatDate(post.createdAt)}</p>
         <p className="mt-3 inline-block rounded-full bg-accent px-3 py-1 text-xs font-medium text-primary">Shared experience, not medical advice</p>
         <p className="mt-3 whitespace-pre-wrap leading-7 text-foreground">{post.body}</p>
         {post.source && <p className="mt-3 text-sm text-muted-foreground">Source: <a href={post.source} target="_blank" rel="noopener noreferrer nofollow" className="break-all text-primary hover:underline">{post.source}</a></p>}
-        <Button variant={marked ? "default" : "outline"} className="mt-5" aria-pressed={marked} onClick={() => toggleHelpful(postId, post.author)}>
+        <Button variant={post.votedByMe ? "default" : "outline"} className="mt-5" aria-pressed={post.votedByMe} onClick={() => vote("post", post.id, !post.votedByMe)}>
           <ThumbsUp aria-hidden="true" /> Helpful · {post.helpful}
         </Button>
-        <span className="ml-3"><ReportButton targetId={post.id} label="post" onReport={(rep) => updateStore((s) => ({ ...s, posts: s.posts.map((p) => (p.id === postId ? addReport(p, rep) : p)) }))} /></span>
+        <span className="ml-3"><ReportButton kind="post" targetId={post.id} label="post" reported={post.reportedByMe} /></span>
       </article>
 
       <section className={`${cardClass} mt-6`}>
@@ -97,7 +102,7 @@ function Thread() {
         <div className="mt-6 border-t border-border pt-5">
           {replyTo && <p className="mb-2 text-xs text-muted-foreground">Replying to a comment · <button type="button" className="text-primary" onClick={() => setReplyTo(null)}>cancel</button></p>}
           <Textarea aria-label="Your reply" maxLength={2000} placeholder="Write a reply. No patient details." value={text} onChange={(e) => setText(e.target.value)} />
-          <Button className="mt-3" onClick={submit} disabled={!text.trim()}>Post reply</Button>
+          <Button className="mt-3" onClick={submit} disabled={!text.trim() || busy}>Post reply</Button>
         </div>
       </section>
     </PageShell>
