@@ -63,7 +63,7 @@ function ModerationPage() {
   return (
     <PageShell eyebrow="Community" title="Moderation">
       <Link to="/community" className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"><ArrowLeft className="size-4" /> Back to feed</Link>
-      <p className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground">Reported posts and answers. Items with 3 reports are hidden automatically and can be reviewed by the AI moderator. You can hide or restore any reported item.</p>
+      <p className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground">Reported posts and answers. Items with 3 reports are hidden automatically and can be reviewed by the AI moderator, which can only keep them hidden or flag them; it never deletes. You can hide or restore any reported item, including after an AI decision.</p>
 
       <h2 className="mt-8 text-lg font-semibold text-navy">Reported items</h2>
       <div className="mt-3 space-y-4">
@@ -90,7 +90,7 @@ function ModerationPage() {
         {modLog.map((e) => (
           <article key={e.id} className="card">
             <p className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-              <span className={`rounded-full px-3 py-1 font-semibold ${e.decision === "remove" ? "bg-destructive/10 text-destructive" : "bg-accent text-primary"}`}>{e.decision === "remove" ? (e.decided_by === "ai" ? "Removed" : "Hidden") : "Restored"}</span>
+              <span className={`rounded-full px-3 py-1 font-semibold ${e.decision === "remove" ? "bg-destructive/10 text-destructive" : "bg-accent text-primary"}`}>{e.decision === "remove" ? "Hidden" : e.decided_by === "ai" ? "Flagged" : "Restored"}</span>
               {e.item_kind} · {e.decided_by === "ai" ? "AI" : e.decided_by} · {formatDate(e.created_at)}
             </p>
             <p className="mt-2 font-medium text-navy">{e.excerpt}</p>

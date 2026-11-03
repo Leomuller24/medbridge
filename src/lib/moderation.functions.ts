@@ -8,7 +8,7 @@ export type AiDecision = { decision: "remove" | "restore"; reason: string };
 const input = z.object({ kind: z.enum(["post", "comment"]), id: z.string().uuid() });
 
 const INSTRUCTIONS = `You moderate MedBridge, a community for Swiss healthcare providers who share communication and cultural-context tips about treating migrant patients.
-A post or comment was hidden after 3 user reports. Decide whether to "remove" it or "restore" it.
+A post or comment was hidden after 3 user reports. Decide whether it should stay hidden ("remove") or can be shown again with a flag for human moderators ("restore"). A human moderator always reviews your decision.
 Remove it if it: contains personal or identifying patient information (names, dates of birth, addresses, case numbers, very specific identifying details); is spam or advertising; is disrespectful, discriminatory or stereotyping toward patients, cultures or colleagues; or gives clearly false or dangerous medical claims presented as fact.
 Restore it if it is a respectful, good-faith professional tip, even if people disagree with it.
 Give a short, neutral reason (one sentence, under 25 words) that can be shown to users. Never give medical advice.`;
@@ -36,12 +36,10 @@ export const aiModerate = createServerFn({ method: "POST" })
     }
     const { data: reps } = await supabaseAdmin.from("community_reports").select("reason").eq(col, data.id);
     const result = await askAi(data.kind, text.slice(0, 6000), (reps ?? []).map((r) => r.reason));
-    if (result.decision === "remove") await supabaseAdmin.from(table).delete().eq("id", data.id);
-    else {
-      await supabaseAdmin.from("community_reports").delete().eq(col, data.id);
-      await supabaseAdmin.from(table).update({ status: "visible" }).eq("id", data.id);
-    }
-    await supabaseAdmin.from("community_mod_log").insert({ item_kind: data.kind, item_id: data.id, author_id: author, excerpt: text.slice(0, 200), decision: result.decision, reason: result.reason, decided_by: "ai" });
+    // The AI may only keep an item hidden or flag it back for people to see; it never deletes.
+    // Reports are kept so the item stays in the human moderators' queue, where they can reverse this.
+    if (result.decision === "restore") await supabaseAdmin.from(table).update({ status: "reported" }).eq("id", data.id);
+    await supabaseAdmin.from("community_mod_log").insert({ item_kind: data.kind, item_id: data.id, author_id: author, excerpt: text.slice(0, 200), decision: result.decision, reason: (result.decision === "remove" ? "AI kept it hidden: " : "AI flagged it as likely fine, visible again pending a moderator: ") + result.reason, decided_by: "ai" });
     return result;
   });
 
