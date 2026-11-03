@@ -33,3 +33,4 @@
 - [x] README, privacy page, footer: server storage sentence
 - [ ] AI moderator: only hide/flag, never delete; human can reverse; explain text sent, storage, cost
 - [ ] Privacy page + README: "Reported posts may be reviewed by an automated system."
+- [ ] Patient side audit: translate notice in all languages, no sign-in, no community, no server storage
