@@ -147,7 +147,7 @@ const INTERP_STAFF_NOTE_EN = "Healthcare staff in Vaud can book community interp
 
 // Patient language written in French, for the staff view.
 const LANG_NAME_FR: Record<PatientLang, string> = {
-  fr: "français", en: "anglais", ar: "arabe", ti: "tigrinya", prs: "dari", ps: "pachto", so: "somali", tr: "turc", uk: "ukrainien",
+  fr: "français", en: "anglais", ar: "arabe", ti: "tigrinya", prs: "dari (persan)", ps: "pachto", so: "somali", tr: "turc", uk: "ukrainien",
 };
 
 function InterpCard({ onClose }: { onClose: () => void }) {
