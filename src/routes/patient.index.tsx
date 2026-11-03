@@ -32,6 +32,8 @@ function PatientHome() {
     <div className="pt-4">
       <h1 className="text-3xl font-semibold text-foreground">{t("hello")}</h1>
       <p className="mt-2 text-lg text-muted-foreground">{t("intro")}</p>
+
+      <PatientAppointmentReminder />
       <div className="mt-8 grid gap-5 sm:grid-cols-2">
         {ITEMS.map(({ topic, icon: Icon }) => (
           <Link
@@ -44,6 +46,13 @@ function PatientHome() {
             {t(`topic.${topic}`)}
           </Link>
         ))}
+        <Link
+          to="/patient/appointments"
+          className="card flex min-h-32 items-center gap-5 p-6 text-xl font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:col-span-full"
+        >
+          <span className="icon-circle size-16 shrink-0"><CalendarDays className="size-8" aria-hidden="true" /></span>
+          {t("appt.title")}
+        </Link>
       </div>
     </div>
   );
