@@ -22,9 +22,9 @@
 
 ## In progress (Nov 3)
 - [x] Patient Translate page: "Ask for an interpreter" card, text in chosen language + French under it
-- [x] [x] Full-screen "Show this to the staff" card view (fix missing mount)
+- [x] Full-screen "Show this to the staff" card view (fix missing mount)
 - [x] Staff note in French AND English: paid service, 0842-442-442.ch for conditions and prices
 - [x] No phone link / Call button for patients anywhere on the patient side
 - [x] Remove interpreter service wording from other patient pages (healthcare steps, phone block, prepare checklist) and link to the card
 - [x] "Translation not yet checked" notice on the card; verify in browser incl. Arabic
-- [x] [x] Patient page "My appointments": add date/time/label (device-only), .ics download per appointment, day-before reminder in chosen language, notice in all languages, link to Prepare checklist, link from patient home
+- [x] Patient page "My appointments": add date/time/label (device-only), .ics download per appointment, day-before reminder in chosen language, notice in all languages, link to Prepare checklist, link from patient home
