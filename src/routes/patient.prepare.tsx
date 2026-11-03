@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Check, Layers, X } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowLeft, ArrowRight, Check, Languages, Layers, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { PatientBack } from "@/components/patient-back";
@@ -27,7 +27,6 @@ const KEY = "medbridge-patient-checklist";
 const SECTIONS: { title: PatientKey; items: PatientKey[] }[] = [
   { title: "prepare.bring", items: ["prepare.papers", "prepare.meds", "prepare.card"] },
   { title: "prepare.who", items: ["prepare.companion"] },
-  { title: "prepare.interpTitle", items: ["prepare.interp"] },
   ];
 
 // Ticks are stored under the old ids so existing ticks are kept.
@@ -103,6 +102,10 @@ function Prepare() {
           <p className="mt-4 rounded-xl border border-dashed border-border px-4 py-3 text-sm italic text-muted-foreground">{t("placeholder")}</p>
         </section>
       </div>
+      <Link to="/patient/translate" className="card flex min-h-16 items-center gap-4 p-6 text-lg font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        <span className="icon-circle size-12 shrink-0"><Languages className="size-6" aria-hidden="true" /></span>
+        {t("tr.askInterp")}
+      </Link>
       {viewer && <QuestionViewer keys={viewer} onClose={() => setViewer(null)} />}
     </div>
   );
