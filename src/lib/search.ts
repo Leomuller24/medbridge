@@ -74,7 +74,7 @@ export function searchAll(query: string, opts: { language?: string | undefined; 
   }
   const posts: PostHit[] = [];
   for (const p of opts.posts) {
-    if (p.hidden) continue;
+    if (p.status === "hidden") continue;
     const r = findMatch(query, p.title);
     if (r) posts.push({ post: p, text: p.title, range: r });
   }

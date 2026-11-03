@@ -5,8 +5,8 @@ import { toast } from "sonner";
 import { PageShell, formatDate } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { updateStore, useStore } from "@/lib/local-store";
-import { applyDecision, reportedItems, type QueueItem } from "@/lib/reports";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { type QueueItem, useReportedItems } from "@/lib/moderation-data";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   beforeLoad: async () => {
@@ -30,30 +30,43 @@ export const Route = createFileRoute("/_authenticated/admin")({
 });
 
 function AdminPage() {
-  const { posts, warnings } = useStore();
-  const items = reportedItems(posts);
+  const qc = useQueryClient();
+  const { data: items = [], isLoading } = useReportedItems();
+  const { data: warnings = [] } = useQuery({
+    queryKey: ["community", "warnings"],
+    queryFn: async () => (await supabase.from("community_warnings").select("user_id")).data ?? [],
+  });
+  const refresh = () => qc.invalidateQueries({ queryKey: ["community"] });
 
-  function decide(item: QueueItem, decision: "remove" | "restore") {
-    updateStore((s) => ({
-      ...s,
-      posts: applyDecision(s.posts, item, decision),
-      modLog: [{ id: item.id, kind: item.kind, text: item.text.slice(0, 200), author: item.author, decision, reason: decision === "remove" ? "Removed by an admin." : "Approved by an admin.", at: new Date().toISOString() }, ...s.modLog].slice(0, 100),
-    }));
+  async function decide(item: QueueItem, decision: "remove" | "restore") {
+    const table = item.kind === "post" ? "community_posts" : "community_answers";
+    const col = item.kind === "post" ? "post_id" : "answer_id";
+    const res = decision === "remove"
+      ? await supabase.from(table).delete().eq("id", item.id)
+      : await supabase.from("community_reports").delete().eq(col, item.id).then(() => supabase.from(table).update({ status: "visible" }).eq("id", item.id));
+    if (res.error) return void toast.error(res.error.message);
+    await supabase.from("community_mod_log").insert({ item_kind: item.kind, item_id: item.id, author_id: item.authorId, excerpt: item.text.slice(0, 200), decision, reason: decision === "remove" ? "Removed by an admin." : "Approved by an admin.", decided_by: "admin" });
     toast.success(decision === "remove" ? "Removed" : "Approved");
+    await refresh();
   }
 
-  function warn(item: QueueItem) {
-    updateStore((s) => ({ ...s, warnings: [{ author: item.author, itemId: item.id, at: new Date().toISOString() }, ...s.warnings] }));
+  async function warn(item: QueueItem) {
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) return;
+    const { error } = await supabase.from("community_warnings").insert({ user_id: item.authorId, item_id: item.id, created_by: u.user.id });
+    if (error) return void toast.error(error.message);
     toast.success(`Warning recorded for ${item.author}`);
+    await refresh();
   }
 
   return (
     <PageShell eyebrow="Admin" title="Reported items">
       <div className="space-y-4">
-        {items.length === 0 && <p className="card text-sm text-muted-foreground">No reported posts or comments.</p>}
+        {isLoading && <p className="card text-sm text-muted-foreground">Loading…</p>}
+        {!isLoading && items.length === 0 && <p className="card text-sm text-muted-foreground">No reported posts or comments.</p>}
         {items.map((item) => {
           const counts = item.reports.reduce<Record<string, number>>((a, r) => ({ ...a, [r.reason]: (a[r.reason] ?? 0) + 1 }), {});
-          const warned = warnings.filter((w) => w.author === item.author).length;
+          const warned = warnings.filter((w) => w.user_id === item.authorId).length;
           return (
             <article key={item.id} className="card">
               <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-destructive"><ShieldAlert className="size-4" /> {item.kind} · {item.reports.length} {item.reports.length === 1 ? "report" : "reports"}</p>

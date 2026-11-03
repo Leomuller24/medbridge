@@ -5,11 +5,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export type AiDecision = { decision: "remove" | "restore"; reason: string };
 
-const input = z.object({
-  kind: z.enum(["post", "comment"]),
-  text: z.string().min(1).max(6000),
-  reasons: z.array(z.string().max(40)).max(50),
-});
+const input = z.object({ kind: z.enum(["post", "comment"]), id: z.string().uuid() });
 
 const INSTRUCTIONS = `You moderate MedBridge, a community for Swiss healthcare providers who share communication and cultural-context tips about treating migrant patients.
 A post or comment was hidden after 3 user reports. Decide whether to "remove" it or "restore" it.
@@ -20,7 +16,36 @@ Give a short, neutral reason (one sentence, under 25 words) that can be shown to
 export const aiModerate = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => input.parse(d))
-  .handler(async ({ data }): Promise<AiDecision> => {
+  .handler(async ({ data, context }): Promise<{ decision: AiDecision["decision"] | null; reason: string }> => {
+    const { data: provider } = await context.supabase.rpc("is_provider", { _user_id: context.userId });
+    if (!provider) throw new Error("Only providers can use the community.");
+    // The server reads the item itself, and only reviews it when the backend has hidden it (3 reports).
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const table = data.kind === "post" ? "community_posts" : "community_answers";
+    const col = data.kind === "post" ? "post_id" : "answer_id";
+    let text = "";
+    let author: string | null = null;
+    if (data.kind === "post") {
+      const { data: row } = await supabaseAdmin.from("community_posts").select("title, body, status, author_id").eq("id", data.id).maybeSingle();
+      if (!row || row.status !== "hidden") return { decision: null, reason: "" };
+      text = `${row.title}\n\n${row.body}`; author = row.author_id;
+    } else {
+      const { data: row } = await supabaseAdmin.from("community_answers").select("body, status, author_id").eq("id", data.id).maybeSingle();
+      if (!row || row.status !== "hidden") return { decision: null, reason: "" };
+      text = row.body; author = row.author_id;
+    }
+    const { data: reps } = await supabaseAdmin.from("community_reports").select("reason").eq(col, data.id);
+    const result = await askAi(data.kind, text.slice(0, 6000), (reps ?? []).map((r) => r.reason));
+    if (result.decision === "remove") await supabaseAdmin.from(table).delete().eq("id", data.id);
+    else {
+      await supabaseAdmin.from("community_reports").delete().eq(col, data.id);
+      await supabaseAdmin.from(table).update({ status: "visible" }).eq("id", data.id);
+    }
+    await supabaseAdmin.from("community_mod_log").insert({ item_kind: data.kind, item_id: data.id, author_id: author, excerpt: text.slice(0, 200), decision: result.decision, reason: result.reason, decided_by: "ai" });
+    return result;
+  });
+
+async function askAi(kind: string, text: string, reasons: string[]): Promise<AiDecision> {
     const key = process.env["LOVABLE_API_KEY"];
     if (!key) throw new Error("AI moderation is not configured.");
     const res = await fetch("https://ai.gateway.lovable.dev/v1/responses", {
@@ -32,7 +57,7 @@ export const aiModerate = createServerFn({ method: "POST" })
         store: false,
         reasoning: { effort: "low" },
         instructions: INSTRUCTIONS,
-        input: `Type: ${data.kind}\nReport reasons: ${data.reasons.join(", ") || "none given"}\n\nContent:\n"""${data.text}"""`,
+        input: `Type: ${kind}\nReport reasons: ${reasons.join(", ") || "none given"}\n\nContent:\n"""${text}"""`,
         text: {
           format: {
             type: "json_schema",
@@ -80,4 +105,4 @@ export const aiModerate = createServerFn({ method: "POST" })
     } catch {
       throw new Error("AI moderation returned an unreadable answer.");
     }
-  });
+  }

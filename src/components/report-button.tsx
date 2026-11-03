@@ -8,35 +8,41 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { useAiReview } from "@/hooks/use-ai-review";
-import { getStore, updateStore, useStore } from "@/lib/local-store";
-import { findQueueItem, REPORT_REASONS, type Report, type ReportReason } from "@/lib/reports";
+import { reportItem, useRefreshCommunity } from "@/lib/community";
+import { REPORT_REASONS, type ReportReason } from "@/lib/reports";
 
-type Props = { targetId: string; label: string; onReport: (report: Report) => void };
+type Props = { kind: "post" | "comment"; targetId: string; label: string; reported: boolean };
 
-export function ReportButton({ targetId, label, onReport }: Props) {
-  const { reported } = useStore();
+export function ReportButton({ kind, targetId, label, reported }: Props) {
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState<ReportReason | "">("");
   const [detail, setDetail] = useState("");
+  const [busy, setBusy] = useState(false);
   const review = useAiReview();
-  const done = reported.includes(targetId);
+  const refresh = useRefreshCommunity();
 
-  function submit() {
+  async function submit() {
     if (!reason) return;
-    onReport({ reason, at: new Date().toISOString(), detail: reason === "Other" ? detail.trim().slice(0, 300) || undefined : undefined });
-    updateStore((s) => ({ ...s, reported: [...s.reported, targetId] }));
-    setOpen(false);
-    if (findQueueItem(getStore().posts, targetId)) {
-      toast.success("Thanks. This is now hidden and our AI moderator is reviewing it.");
-      void review(targetId);
-    } else toast.success("Thanks for your report.");
+    setBusy(true);
+    try {
+      await reportItem(kind, targetId, reason, reason === "Other" ? detail.trim().slice(0, 300) || undefined : undefined);
+      setOpen(false);
+      toast.success("Thanks for your report.");
+      // The backend hides content at 3 reports; the AI moderator then reviews it.
+      void review(kind, targetId);
+      await refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not send the report.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-auto gap-1 px-2 py-1 text-xs text-muted-foreground hover:text-destructive" disabled={done} aria-label={`Report ${label}`}>
-          <Flag aria-hidden="true" className="size-3.5" /> {done ? "Reported" : "Report"}
+        <Button variant="ghost" size="sm" className="h-auto gap-1 px-2 py-1 text-xs text-muted-foreground hover:text-destructive" disabled={reported} aria-label={`Report ${label}`}>
+          <Flag aria-hidden="true" className="size-3.5" /> {reported ? "Reported" : "Report"}
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -55,7 +61,7 @@ export function ReportButton({ targetId, label, onReport }: Props) {
         {reason === "Other" && <Textarea aria-label="Tell us more" maxLength={300} placeholder="Tell us more (optional). No patient details." value={detail} onChange={(e) => setDetail(e.target.value)} />}
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-          <Button onClick={submit} disabled={!reason}>Send report</Button>
+          <Button onClick={submit} disabled={!reason || busy}>Send report</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

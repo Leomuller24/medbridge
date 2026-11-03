@@ -8,8 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useProfile, useSaveProfile } from "@/hooks/use-profile";
-import { updateStore, useStore } from "@/lib/local-store";
-import { ME, level, pointsByAuthor, weeklyStreak } from "@/lib/reputation";
+import { updateStore } from "@/lib/local-store";
+import { useMyStats } from "@/lib/community";
 import { Award, Flame, Star } from "lucide-react";
 import { LANGUAGES, ROLES } from "@/lib/medbridge-data";
 
@@ -30,9 +30,9 @@ export const Route = createFileRoute("/_authenticated/settings")({
 function SettingsPage() {
   const { data: p } = useProfile();
   const save = useSaveProfile();
-  const store = useStore();
-  const myPoints = pointsByAuthor(store.posts)[ME] ?? 0;
-  const streak = weeklyStreak(store.activity);
+  const stats = useMyStats().data;
+  const myPoints = stats?.points ?? 0;
+  const streak = stats?.streak ?? 0;
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
   const [languages, setLanguages] = useState<string[]>([]);
@@ -75,7 +75,7 @@ function SettingsPage() {
           <h2 className="text-lg font-semibold text-card-foreground">Contributions</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-3">
             <div className="rounded-2xl bg-secondary p-4"><p className="flex items-center gap-1.5 text-xs text-muted-foreground"><Star aria-hidden="true" className="size-3.5 text-primary" /> Points</p><p className="mt-1 text-2xl font-bold text-navy">{myPoints}</p></div>
-            <div className="rounded-2xl bg-secondary p-4"><p className="flex items-center gap-1.5 text-xs text-muted-foreground"><Award aria-hidden="true" className="size-3.5 text-primary" /> Level</p><p className="mt-1 text-2xl font-bold text-navy">{level(myPoints)}</p></div>
+            <div className="rounded-2xl bg-secondary p-4"><p className="flex items-center gap-1.5 text-xs text-muted-foreground"><Award aria-hidden="true" className="size-3.5 text-primary" /> Level</p><p className="mt-1 text-2xl font-bold text-navy">{stats?.level ?? "Newcomer"}</p></div>
             <div className="rounded-2xl bg-secondary p-4"><p className="flex items-center gap-1.5 text-xs text-muted-foreground"><Flame aria-hidden="true" className="size-3.5 text-coral" /> Weekly streak</p><p className="mt-1 text-2xl font-bold text-navy">{streak} {streak === 1 ? "week" : "weeks"}</p></div>
           </div>
           <p className="mt-4 text-sm text-muted-foreground">Earn 1 point for each helpful vote from a colleague, plus 2 for the first helpful answer on a post. Reported content earns no points. Levels: Newcomer, Helper (10+), Trusted (50+). A week counts when you post, answer or vote helpful; one skipped week per month is allowed. There is no public ranking.</p>
@@ -93,7 +93,7 @@ function SettingsPage() {
         <section className={cardClass}>
           <h2 className="text-lg font-semibold text-card-foreground">Privacy</h2>
           <p className="mt-2 text-sm font-medium text-foreground">MedBridge does not store patient data.</p>
-          <p className="mt-1 text-sm text-muted-foreground">Cases and notes are kept only in this browser. Your account stores just your name, role, email and preferences.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Cases and notes are kept only in this browser. Your account stores your name, role, email, preferences and anything you share in the Community.</p>
           <Button variant="outline" className="mt-5" onClick={() => { if (confirm("Remove all cases and notes from this browser?")) { updateStore((s) => ({ ...s, cases: [], notes: [] })); toast.success("Cleared from this browser"); } }}>
             Clear cases and notes from this browser
           </Button>

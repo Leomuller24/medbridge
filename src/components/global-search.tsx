@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { BookOpen, Search, Stethoscope, UsersRound, X } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { useStore } from "@/lib/local-store";
+import { useCommunity } from "@/lib/community";
 import { searchAll, suggestions } from "@/lib/search";
 import { cn } from "@/lib/utils";
 
@@ -20,7 +20,7 @@ function Mark({ text, range }: { text: string; range: [number, number] }) {
 }
 
 export function GlobalSearch({ language, selected = [], onSelectSymptom }: { language?: string; selected?: string[]; onSelectSymptom: (term: string) => void }) {
-  const { posts } = useStore();
+  const posts = useCommunity().data?.posts ?? [];
   const [query, setQuery] = useState("");
   const [tab, setTab] = useState<Tab>("All");
   const q = query.trim();

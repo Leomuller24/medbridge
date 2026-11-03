@@ -19,18 +19,18 @@ import { Button } from "@/components/ui/button";
 import { useProfile } from "@/hooks/use-profile";
 import { useStore } from "@/lib/local-store";
 import { ARTICLES } from "@/lib/medbridge-data";
-import { ME, level, pointsByAuthor, weeklyStreak } from "@/lib/reputation";
+import { useCommunity, useMyStats } from "@/lib/community";
 import { Award, Flame, Star } from "lucide-react";
 
 function ContributionCard() {
-  const store = useStore();
-  const points = pointsByAuthor(store.posts)[ME] ?? 0;
-  const streak = weeklyStreak(store.activity);
+  const stats = useMyStats().data;
+  const points = stats?.points ?? 0;
+  const streak = stats?.streak ?? 0;
   return (
     <Link to="/settings" className="card mt-6 flex flex-wrap items-center gap-x-8 gap-y-3 p-5" aria-label="Your contributions — open your profile">
       <span className="flex items-center gap-2 text-sm text-muted-foreground"><Star className="size-4 text-primary" aria-hidden="true" /><b className="text-lg text-foreground">{points}</b> points</span>
       <span className="flex items-center gap-2 text-sm text-muted-foreground"><Flame className="size-4 text-coral" aria-hidden="true" /><b className="text-lg text-foreground">{streak}</b> {streak === 1 ? "week" : "weeks"} streak</span>
-      <span className="flex items-center gap-2 text-sm text-muted-foreground"><Award className="size-4 text-primary" aria-hidden="true" /><b className="text-lg text-foreground">{level(points)}</b></span>
+      <span className="flex items-center gap-2 text-sm text-muted-foreground"><Award className="size-4 text-primary" aria-hidden="true" /><b className="text-lg text-foreground">{stats?.level ?? "Newcomer"}</b></span>
       <span className="ml-auto flex items-center gap-1 text-sm font-medium text-primary">View profile <ArrowRight className="size-4" aria-hidden="true" /></span>
     </Link>
   );
@@ -67,8 +67,8 @@ const LANG_CHIP: Record<string, string> = {
 
 function Dashboard() {
   const { data: profile, isLoading } = useProfile();
-  const { cases, notes, posts: allPosts } = useStore();
-  const posts = allPosts.filter((p) => !p.hidden);
+  const { cases, notes } = useStore();
+  const posts = (useCommunity().data?.posts ?? []).filter((p) => p.status !== "hidden");
   const navigate = useNavigate();
 
   useEffect(() => {

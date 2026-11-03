@@ -43,6 +43,20 @@
       "when": 1793724772465,
       "tag": "0005_translation_quota",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793725802912,
+      "tag": "0006_community_backend",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793725941374,
+      "tag": "0007_community_mod_log_insert",
+      "breakpoints": true
     }
   ]
 }
