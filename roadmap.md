@@ -27,3 +27,4 @@
 - [ ] No phone link / Call button for patients anywhere on the patient side
 - [ ] Remove interpreter service wording from other patient pages (healthcare steps, phone block, prepare checklist) and link to the card
 - [ ] "Translation not yet checked" notice on the card; verify in browser incl. Arabic
+- [ ] Patient page "My appointments": add date/time/label (device-only), .ics download per appointment, day-before reminder in chosen language, notice in all languages, link to Prepare checklist, link from patient home
