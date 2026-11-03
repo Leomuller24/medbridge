@@ -1,4 +1,3 @@
-import type { Report } from "./reports";
 // Symptom list is the curated Swiss SNOMED CT set. Briefing text is still example content.
 
 export const ROLES = ["Doctor", "Nurse", "Interpreter", "Other"] as const;
@@ -131,22 +130,29 @@ export type NoteRecord = {
   source?: string | undefined;
 };
 
-export type Reply = { id: string; author: string; text: string; createdAt: string; replies?: Reply[]; reports?: Report[] | undefined; hidden?: boolean | undefined; helpful?: number | undefined };
+export type ContentStatus = "visible" | "reported" | "hidden";
 
+/** A community answer/comment, loaded from the backend. */
+export type Reply = { id: string; authorId: string; author: string; text: string; createdAt: string; status: ContentStatus; helpful: number; votedByMe: boolean; reportedByMe: boolean; replies: Reply[] };
+
+/** A community post, loaded from the backend. */
 export type Post = {
   id: string;
+  authorId: string;
+  author: string;
+  authorRole: string;
   category: string;
   title: string;
   body: string;
-  author: string;
   createdAt: string;
   helpful: number;
+  votedByMe: boolean;
+  reportedByMe: boolean;
   language: string;
   replies: Reply[];
   source?: string | undefined;
-  reports?: Report[] | undefined;
-  hidden?: boolean | undefined;
-  /** First answer that received a helpful vote; earns a bonus. */
+  status: ContentStatus;
+  /** First top-level answer that received a counted helpful vote; earns a bonus. */
   bonusReplyId?: string | undefined;
 };
 
@@ -161,42 +167,6 @@ export const SEED_CASES: CaseRecord[] = [
 export const SEED_NOTES: NoteRecord[] = [
   { id: "n1", caseId: "c1", text: "Patient preferred to speak through a professional interpreter rather than a cousin.", visibility: "private", createdAt: "2026-10-01T09:30:00Z" },
   { id: "n2", caseId: "c3", text: "Describing tiredness as 'the soul is heavy' helped open the conversation.", visibility: "shared", createdAt: "2026-09-24T14:10:00Z" },
-];
-
-export const SEED_POSTS: Post[] = [
-  {
-    id: "p1",
-    category: "Interpreting",
-    title: "Working with phone interpreters for Tigrinya",
-    body: "Booking a phone interpreter a day ahead made a big difference. Short sentences and pauses helped the interpreter keep up.",
-    author: "Nurse · Bern",
-    createdAt: "2026-10-02T08:00:00Z",
-    helpful: 14,
-    language: "Tigrinya",
-    replies: [{ id: "r1", author: "Interpreter · Zürich", text: "Agreed. Sharing the topic in advance also helps us prepare vocabulary.", createdAt: "2026-10-02T10:00:00Z" }],
-  },
-  {
-    id: "p2",
-    category: "Family care",
-    title: "When relatives answer for the patient",
-    body: "I now thank the family first, then ask the patient directly with the interpreter. It keeps everyone involved without losing the patient's voice.",
-    author: "Doctor · Lausanne",
-    createdAt: "2026-09-29T12:00:00Z",
-    helpful: 22,
-    language: "Arabic",
-    replies: [],
-  },
-  {
-    id: "p3",
-    category: "Cultural context",
-    title: "Metaphors for low mood",
-    body: "Several patients described low mood using body images rather than emotional words. Asking about sleep and energy first felt less intrusive.",
-    author: "Doctor · Basel",
-    createdAt: "2026-09-20T15:00:00Z",
-    helpful: 9,
-    language: "Ukrainian",
-    replies: [],
-  },
 ];
 
 // Example synonyms (lay terms) used by search. Example content, to be reviewed.
