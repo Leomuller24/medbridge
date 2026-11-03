@@ -18,7 +18,7 @@ import {
 import { useIsAdmin } from "@/hooks/use-is-admin";
 import { useSession } from "@/hooks/use-session";
 import { supabase } from "@/integrations/supabase/client";
-import { useStore } from "@/lib/local-store";
+import { useCommunity } from "@/lib/community";
 import { searchAll } from "@/lib/search";
 import { cn } from "@/lib/utils";
 
@@ -118,7 +118,7 @@ function TopBar() {
 }
 
 function TopSearch() {
-  const { posts } = useStore();
+  const posts = useCommunity().data?.posts ?? [];
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const q = query.trim();

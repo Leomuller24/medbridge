@@ -14,7 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { newId, updateStore, useStore } from "@/lib/local-store";
 import { findPii, piiWarning } from "@/lib/pii";
-import { checkPosting } from "@/lib/posting-rules";
+import { createPost, useRefreshCommunity } from "@/lib/community";
 
 export const Route = createFileRoute("/_authenticated/notes")({
   head: () => ({
@@ -31,7 +31,8 @@ export const Route = createFileRoute("/_authenticated/notes")({
 });
 
 function NotesPage() {
-  const { cases, notes, posts, activity } = useStore();
+  const { cases, notes } = useStore();
+  const refreshCommunity = useRefreshCommunity();
   const [caseId, setCaseId] = useState(cases[0]?.id ?? "");
   const [text, setText] = useState("");
   const [shared, setShared] = useState(false);
@@ -66,17 +67,15 @@ function NotesPage() {
   async function shareToCommunity(noteId: string) {
     const note = notes.find((n) => n.id === noteId);
     if (!note || note.visibility !== "shared" || !current) return;
-    const { data } = await supabase.auth.getUser();
     const hits = findPii(note.text);
     if (hits.length) return void toast.warning(piiWarning(hits));
-    const blocked = checkPosting(data.user, "post", `${note.text} ${note.source ?? ""}`, activity);
-    if (blocked) return void toast.error(blocked);
-    updateStore((s) => ({
-      ...s,
-      activity: [...s.activity, { type: "post", at: new Date().toISOString() }],
-      posts: [{ id: newId(), category: "Communication", title: (note.text.split("\n")[0] ?? "").slice(0, 80), body: note.text, author: "You", createdAt: new Date().toISOString(), helpful: 0, language: current.language, replies: [], ...(note.source ? { source: note.source } : {}) }, ...s.posts],
-    }));
-    toast.success("Shared to Community");
+    try {
+      await createPost({ category: "Communication", title: (note.text.split("\n")[0] ?? "").slice(0, 80), body: note.text, language: current.language, source: note.source });
+      await refreshCommunity();
+      toast.success("Shared to Community");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not share to Community.");
+    }
   }
 
   return (
