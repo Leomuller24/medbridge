@@ -306,7 +306,7 @@ function Faq() {
           <h2 className="mt-3 text-4xl font-bold text-foreground">Questions, answered</h2>
           <div className={`${card} mt-8 flex gap-4 bg-soft p-6`}>
             <span className={`${iconWrap} bg-card text-teal`}><ShieldCheck aria-hidden="true" className="size-5" /></span>
-            <p className="text-sm font-medium leading-6 text-foreground">MedBridge does not store patient data.</p>
+            <p className="text-sm font-medium leading-6 text-foreground">MedBridge does not store patient data. Provider accounts, community posts and votes are stored on a server. Patient pages store nothing and collect no personal data.</p>
           </div>
         </Reveal>
         <Reveal delay={100}>
@@ -371,6 +371,7 @@ function Footer() {
       <div className="border-t border-primary-foreground/10">
         <div className="mx-auto flex max-w-7xl flex-col gap-2 px-5 py-6 text-xs text-primary-foreground/60 sm:flex-row sm:justify-between sm:px-8 lg:px-10">
           <p className="flex items-center gap-2"><ShieldCheck aria-hidden="true" className="size-4 text-aqua" /> MedBridge does not store patient data.</p>
+          <p>Provider accounts, community posts and votes are stored on a server. Patient pages store nothing and collect no personal data.</p>
           <p>This tool gives general information. It does not replace a doctor and cannot diagnose.</p>
           <button type="button" onClick={() => { clearStoredRole(); window.location.assign("/choose-role"); }} className="text-left underline-offset-2 hover:underline">Switch role</button>
         </div>

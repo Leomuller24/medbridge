@@ -28,3 +28,6 @@
 - [x] Remove interpreter service wording from other patient pages (healthcare steps, phone block, prepare checklist) and link to the card
 - [x] "Translation not yet checked" notice on the card; verify in browser incl. Arabic
 - [x] Patient page "My appointments": add date/time/label (device-only), .ics download per appointment, day-before reminder in chosen language, notice in all languages, link to Prepare checklist, link from patient home
+- [x] Moderator-only moderation page (hide/restore reported items)
+- [x] Export own posts + delete own account and content
+- [x] README, privacy page, footer: server storage sentence

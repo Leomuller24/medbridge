@@ -6,6 +6,7 @@ import { PageShell, formatDate } from "@/components/page-shell";
 import { Input } from "@/components/ui/input";
 import { ReportButton } from "@/components/report-button";
 import { useCommunity } from "@/lib/community";
+import { useIsModerator } from "@/lib/moderation-data";
 import { useStore } from "@/lib/local-store";
 import { COMMUNITY_CATEGORIES } from "@/lib/medbridge-data";
 import { countReplies, isUnanswered } from "@/lib/reputation";
@@ -37,6 +38,7 @@ const GUIDELINES = [
 function CommunityPage() {
   const { cases } = useStore();
   const { data, isLoading, error } = useCommunity();
+  const { data: isMod } = useIsModerator();
   const posts = data?.posts ?? [];
   const [cat, setCat] = useState("All");
   const [q, setQ] = useState("");
@@ -151,7 +153,7 @@ function CommunityPage() {
           <section className="card bg-secondary/60">
             <p className="flex items-center gap-2 text-sm font-semibold text-navy"><Users aria-hidden="true" className="size-4 text-primary" /> Privacy reminder</p>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">Posts are shared with signed-in providers only. Never write names or patient details. MedBridge does not store patient data.</p>
-            <Link to="/moderation" className="mt-3 inline-block text-sm font-medium text-primary hover:underline">AI moderation</Link>
+            {isMod && <Link to="/moderation" className="mt-3 inline-block text-sm font-medium text-primary hover:underline">Moderation</Link>}
           </section>
         </aside>
       </div>

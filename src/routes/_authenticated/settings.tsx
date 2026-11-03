@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { useProfile, useSaveProfile } from "@/hooks/use-profile";
 import { updateStore } from "@/lib/local-store";
 import { useMyStats } from "@/lib/community";
+import { MyDataCard } from "@/components/my-data-card";
 import { Award, Flame, Star } from "lucide-react";
 import { LANGUAGES, ROLES } from "@/lib/medbridge-data";
 
@@ -98,6 +99,8 @@ function SettingsPage() {
             Clear cases and notes from this browser
           </Button>
         </section>
+
+        <MyDataCard />
 
         <section className={cardClass}>
           <h2 className="text-lg font-semibold text-card-foreground">Notifications</h2>

@@ -5,11 +5,5 @@ import type { Post, Reply } from "./medbridge-data";
 
 export const FIRST_ANSWER_BONUS = 2;
 
-export function level(points: number): "Newcomer" | "Helper" | "Trusted" {
-  if (points >= 50) return "Trusted";
-  if (points >= 10) return "Helper";
-  return "Newcomer";
-}
-
 export const countReplies = (r: Reply[]): number => r.filter((x) => x.status !== "hidden").reduce((n, x) => n + 1 + countReplies(x.replies), 0);
 export const isUnanswered = (p: Post) => countReplies(p.replies) === 0;
