@@ -5,10 +5,10 @@ import { useState } from "react";
 import { PageShell, formatDate } from "@/components/page-shell";
 import { Input } from "@/components/ui/input";
 import { ReportButton } from "@/components/report-button";
-import { updateStore, useStore } from "@/lib/local-store";
-import { addReport } from "@/lib/reports";
+import { useCommunity } from "@/lib/community";
+import { useStore } from "@/lib/local-store";
 import { COMMUNITY_CATEGORIES } from "@/lib/medbridge-data";
-import { countReplies, isUnanswered, pointsByAuthor } from "@/lib/reputation";
+import { countReplies, isUnanswered } from "@/lib/reputation";
 
 export const Route = createFileRoute("/_authenticated/community/")({
   head: () => ({
@@ -25,8 +25,6 @@ export const Route = createFileRoute("/_authenticated/community/")({
 });
 
 
-const ROLES = ["Doctor", "Nurse", "Interpreter", "Midwife"] as const;
-const roleFor = (author: string) => ROLES[author.length % ROLES.length];
 const initials = (name: string) => name.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 
 const GUIDELINES = [
@@ -37,13 +35,15 @@ const GUIDELINES = [
 ];
 
 function CommunityPage() {
-  const { posts, cases } = useStore();
+  const { cases } = useStore();
+  const { data, isLoading, error } = useCommunity();
+  const posts = data?.posts ?? [];
   const [cat, setCat] = useState("All");
   const [q, setQ] = useState("");
   const query = q.trim().toLowerCase();
-  const points = pointsByAuthor(posts);
-  const unanswered = posts.filter((p) => !p.hidden && isUnanswered(p));
-  const list = posts.filter((p) => !p.hidden && (cat === "All" || (cat === "Unanswered" ? isUnanswered(p) : p.category === cat)) && (!query || `${p.title} ${p.body}`.toLowerCase().includes(query)));
+  const points = data?.points ?? {};
+  const unanswered = posts.filter((p) => p.status !== "hidden" && isUnanswered(p));
+  const list = posts.filter((p) => p.status !== "hidden" && (cat === "All" || (cat === "Unanswered" ? isUnanswered(p) : p.category === cat)) && (!query || `${p.title} ${p.body}`.toLowerCase().includes(query)));
 
   return (
     <PageShell eyebrow="Community" title="Learn from colleagues">
@@ -91,10 +91,11 @@ function CommunityPage() {
 
           {/* Post cards */}
           <div className="mt-6 space-y-4">
-            {list.length === 0 && <p className="text-muted-foreground">No posts found.</p>}
+            {isLoading && <p className="text-muted-foreground">Loading posts…</p>}
+            {error && <p className="text-destructive">Could not load the community. Please try again.</p>}
+            {!isLoading && !error && list.length === 0 && <p className="text-muted-foreground">No posts found.</p>}
             {list.map((p) => {
               const related = cases.filter((c) => c.language === p.language);
-              const role = roleFor(p.author);
               return (
                 <article key={p.id} className="card">
                   <div className="flex items-center gap-3">
@@ -102,8 +103,8 @@ function CommunityPage() {
                     <div className="min-w-0">
                       <p className="flex flex-wrap items-center gap-2 text-sm font-semibold text-navy">
                         {p.author}
-                        <span className="rounded-full bg-accent px-2.5 py-0.5 text-xs font-medium text-primary">{role}</span>
-                        <span className="text-xs font-medium text-primary">{points[p.author] ?? 0} pts</span>
+                        {p.authorRole && <span className="rounded-full bg-accent px-2.5 py-0.5 text-xs font-medium text-primary">{p.authorRole}</span>}
+                        <span className="text-xs font-medium text-primary">{points[p.authorId] ?? 0} pts</span>
                       </p>
                       <p className="text-xs text-muted-foreground">{formatDate(p.createdAt)}</p>
                     </div>
@@ -127,7 +128,7 @@ function CommunityPage() {
                         <Link key={c.id} to="/cases/$caseId" params={{ caseId: c.id }} className="ml-1 font-medium text-primary hover:underline">{c.code}</Link>
                       ))}</span>
                     )}
-                    <span className="ml-auto"><ReportButton targetId={p.id} label="post" onReport={(r) => updateStore((s) => ({ ...s, posts: s.posts.map((x) => (x.id === p.id ? addReport(x, r) : x)) }))} /></span>
+                    <span className="ml-auto"><ReportButton kind="post" targetId={p.id} label="post" reported={p.reportedByMe} /></span>
                   </div>
                 </article>
               );
@@ -149,7 +150,7 @@ function CommunityPage() {
           </section>
           <section className="card bg-secondary/60">
             <p className="flex items-center gap-2 text-sm font-semibold text-navy"><Users aria-hidden="true" className="size-4 text-primary" /> Privacy reminder</p>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">Posts stay in your own browser in this version. MedBridge does not store patient data.</p>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">Posts are shared with signed-in providers only. Never write names or patient details. MedBridge does not store patient data.</p>
             <Link to="/moderation" className="mt-3 inline-block text-sm font-medium text-primary hover:underline">AI moderation</Link>
           </section>
         </aside>
