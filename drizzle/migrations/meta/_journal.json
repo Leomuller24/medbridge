@@ -78,6 +78,13 @@
       "when": 1793726542015,
       "tag": "0010_provider_approval",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1793727179515,
+      "tag": "0011_community_providers_only_read",
+      "breakpoints": true
     }
   ]
 }
