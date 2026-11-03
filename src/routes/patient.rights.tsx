@@ -34,6 +34,7 @@ function Rights() {
       {[t("rights.rights"), t("rights.privacy")].map((title) => (
         <section key={title} className="card mt-5 p-6">
           <h2 className="text-xl font-semibold text-foreground">{title}</h2>
+          {title === t("rights.privacy") && <p className="mt-3 text-base text-foreground">{t("tr.notice")}</p>}
           <p className="mt-3 rounded-xl border border-dashed border-border px-4 py-3 text-sm italic text-muted-foreground">{t("placeholder")}</p>
         </section>
       ))}

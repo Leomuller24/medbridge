@@ -73,6 +73,7 @@ function PatientLayout() {
           </div>
           <p className="mt-4 text-center text-sm font-medium text-foreground">{t("general")}</p>
           <p className="mt-1 text-center text-sm text-muted-foreground">{t("noData")}</p>
+          <p className="mt-1 text-center text-sm text-muted-foreground">{t("tr.notice")}</p>
           {lang !== "en" && <p className="mt-2 text-center text-xs text-muted-foreground">{t("notChecked")}</p>}
         </footer>
         {pathname !== "/patient/translate" && (

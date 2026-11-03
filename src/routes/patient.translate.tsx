@@ -40,13 +40,19 @@ function TranslatePage() {
   function clear() { setText(""); setResult(null); setError(null); }
   function swap() { setDirection((d) => (d === "toMe" ? "toDoctor" : "toMe")); clear(); }
 
+  function deviceId() {
+    let id = localStorage.getItem("medbridge-device");
+    if (!id) { id = Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, "0")).join(""); localStorage.setItem("medbridge-device", id); }
+    return id;
+  }
+
   async function run() {
     if (!text.trim() || busy) return;
     setBusy(true); setError(null); setResult(null);
     try {
-      const r = await translate({ data: { text: text.slice(0, 2000), target } });
+      const r = await translate({ data: { text: text.slice(0, 2000), target, device: deviceId() } });
       if (r.ok) setResult(r.text);
-      else setError(r.reason === "could_not" ? t("tr.couldNot") : t("tr.error"));
+      else setError(r.reason === "could_not" ? t("tr.couldNot") : r.reason === "daily_limit" ? t("tr.unavailable") : r.reason === "device_limit" ? t("tr.deviceLimit") : t("tr.error"));
     } catch {
       setError(t("tr.error"));
     } finally {
@@ -60,7 +66,7 @@ function TranslatePage() {
       <h1 className="mt-6 text-3xl font-semibold text-foreground">{t("topic.translate")}</h1>
 
       <p className="mt-4 flex items-start gap-3 rounded-2xl bg-accent p-4 text-base font-medium text-accent-foreground">
-        <ShieldCheck className="mt-0.5 size-5 shrink-0" aria-hidden="true" /> {t("tr.privacy")}
+        <ShieldCheck className="mt-0.5 size-5 shrink-0" aria-hidden="true" /> {t("tr.notice")}
       </p>
       <p role="note" className="mt-3 flex items-start gap-3 rounded-2xl border-2 border-destructive/40 bg-secondary p-4 text-base font-semibold text-foreground">
         <ShieldAlert className="mt-0.5 size-5 shrink-0" aria-hidden="true" /> {t("tr.warning")}
