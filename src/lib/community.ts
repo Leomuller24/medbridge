@@ -114,14 +114,15 @@ export async function createAnswer(postId: string, parentId: string | null, body
 export async function setHelpful(kind: "post" | "comment", id: string, on: boolean) {
   const voter_id = await myId();
   const col = kind === "post" ? "post_id" : "answer_id";
-  if (on) fail((await supabase.from("community_votes").insert({ voter_id, [col]: id })).error);
+  const row = kind === "post" ? { voter_id, post_id: id } : { voter_id, answer_id: id };
+  if (on) fail((await supabase.from("community_votes").insert(row)).error);
   else fail((await supabase.from("community_votes").delete().eq("voter_id", voter_id).eq(col, id)).error);
 }
 
 export async function reportItem(kind: "post" | "comment", id: string, reason: ReportReason, detail?: string | undefined) {
   const reporter_id = await myId();
-  const col = kind === "post" ? "post_id" : "answer_id";
-  const { error } = await supabase.from("community_reports").insert({ reporter_id, [col]: id, reason, detail: detail ?? null });
+  const target = kind === "post" ? { post_id: id } : { answer_id: id };
+  const { error } = await supabase.from("community_reports").insert({ reporter_id, ...target, reason, detail: detail ?? null });
   fail(error);
 }
 
