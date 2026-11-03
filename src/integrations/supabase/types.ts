@@ -56,6 +56,39 @@ export type Database = {
         }
         Relationships: []
       }
+      translation_daily_usage: {
+        Row: {
+          count: number
+          day: string
+        }
+        Insert: {
+          count?: number
+          day: string
+        }
+        Update: {
+          count?: number
+          day?: string
+        }
+        Relationships: []
+      }
+      translation_device_usage: {
+        Row: {
+          count: number
+          device_hash: string
+          hour_start: string
+        }
+        Insert: {
+          count?: number
+          device_hash: string
+          hour_start: string
+        }
+        Update: {
+          count?: number
+          device_hash?: string
+          hour_start?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -79,6 +112,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      consume_translation_quota: {
+        Args: { _daily: number; _device_hash: string; _hourly: number }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

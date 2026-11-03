@@ -36,6 +36,13 @@
       "when": 1793122796752,
       "tag": "0004_profile_account_role",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793724772465,
+      "tag": "0005_translation_quota",
+      "breakpoints": true
     }
   ]
 }
