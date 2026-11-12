@@ -144,14 +144,14 @@ function Appointments() {
         <section className="mt-5 space-y-4">
           <div className="card p-4 sm:p-6">
             <div className="flex items-center justify-between gap-2">
-              <button type="button" aria-label={t("appt.prevMonth")} onClick={() => setMonth(({ y, m }) => (m === 0 ? { y: y - 1, m: 11 } : { y, m: m - 1 }))}
+              <button type="button" aria-label={t("appt.prevMonth")} onClick={() => setMonth({ y: month.m === 0 ? month.y - 1 : month.y, m: month.m === 0 ? 11 : month.m - 1 })}
                 className="btn-secondary inline-flex size-12 items-center justify-center">
                 <ChevronLeft className="size-5 rtl:rotate-180" aria-hidden="true" />
               </button>
               <h2 className="text-xl font-semibold capitalize text-foreground">
                 {new Date(month.y, month.m, 1).toLocaleDateString(LOCALES[lang] ?? undefined, { month: "long", year: "numeric" })}
               </h2>
-              <button type="button" aria-label={t("appt.nextMonth")} onClick={() => setMonth(({ y, m }) => (m === 11 ? { y: y + 1, m: 0 } : { y, m: m + 1 }))}
+              <button type="button" aria-label={t("appt.nextMonth")} onClick={() => setMonth({ y: month.m === 11 ? month.y + 1 : month.y, m: month.m === 11 ? 0 : month.m + 1 })}
                 className="btn-secondary inline-flex size-12 items-center justify-center">
                 <ChevronRight className="size-5 rtl:rotate-180" aria-hidden="true" />
               </button>
