@@ -75,6 +75,11 @@ const TABLE = {
   "appt.empty": ["No appointments yet.", "Aucun rendez-vous pour l'instant.", "لا مواعيد بعد.", "ኣብ ሕጂ ስዒባታት ኣይነበሩን።", "هنوز قراری نیست.", "ترسره ملاقاتونه نشته.", "Weli ballanqaad ma jiraan.", "Henüz randevu yok.", "Записів ще немає."],
   "appt.calendar": ["Add to my phone calendar", "Ajouter au calendrier de mon téléphone", "أضف إلى تقويم هاتفي", "ናብ ተሌፎነይ ካለንዳር ጨምር", "به تقویم تلفنم اضافه کن", "زما تلیفون کیلنډر ته ورزیات کړه", "Ku dar kalendarkayga telefoonka", "Telefonumdaki takvime ekle", "Додати до календаря мого телефона"],
   "appt.reminder": ["Reminder: tomorrow you have an appointment.", "Rappel : demain, vous avez un rendez-vous.", "تذكير: غدًا لديك موعد.", "መግለጺ፡ ጽባሕ ስዒብ ኣለካ።", "یادآوری: فردا قرار دارید.", "یادونه: سبا ستاسو ملاقات ده.", "Xusuusnow: berri waxaa jira ballanqaad.", "Hatırlatma: yarın bir randevunuz var.", "Нагадування: завтра у вас запис."],
+  "appt.viewList": ["List", "Liste", "قائمة", "ዝርዝር", "فهرست", "لېست", "Liis", "Liste", "Список"],
+  "appt.viewCalendar": ["Calendar", "Calendrier", "التقويم", "ካለንዳር", "تقویم", "کیلنډر", "Kalandar", "Takvim", "Календар"],
+  "appt.prevMonth": ["Previous month", "Mois précédent", "الشهر السابق", "ዝሓለፈ ወርሒ", "ماه قبل", "تېره میاشت", "Bishii hore", "Önceki ay", "Попередній місяць"],
+  "appt.nextMonth": ["Next month", "Mois suivant", "الشهر التالي", "ዝመጽእ ወርሒ", "ماه بعد", "راتلونکې میاشت", "Bisha xigta", "Sonraki ay", "Наступний місяць"],
+  "appt.noneThisDay": ["No appointments on this day.", "Aucun rendez-vous ce jour-là.", "لا مواعيد في هذا اليوم.", "ኣብዚ መዓልቲ ስዒባታት የለን።", "در این روز قراری نیست.", "په دې ورځ ملاقات نشته.", "Maalintan ballanqaad ma jiro.", "Bu gün randevu yok.", "Цього дня записів немає."],
   "appt.default": ["Appointment", "Rendez-vous", "موعد", "ስዒብ", "قرار", "ملاقات", "Ballanqaad", "Randevu", "Запис"],
   "tr.askInterp": ["Ask for an interpreter", "Demander un interprète", "اطلب مترجمًا", "ተርጓሚ ሕተት", "ترجمان بخواهید", "ژباړونکی وغواړئ", "Codso turjumaan", "Tercüman iste", "Попросити перекладача"],
   // ---------- Prepare my appointment ----------
